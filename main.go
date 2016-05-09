@@ -1,10 +1,12 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"log"
 	"os"
+	"strings"
 )
 
 var apiRoot string
@@ -29,9 +31,14 @@ func readContentType(contentType string) {
 		log.Fatalln("Failed to open:", err)
 	}
 
+	var content []string
 	for _, file := range files {
-		fmt.Println(file.Name())
+		content = append(content, strings.TrimSuffix(file.Name(), ".md"))
 	}
+
+	data, _ := json.MarshalIndent(content, "", "  ")
+
+	fmt.Printf("%s\n", data)
 
 }
 
