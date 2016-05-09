@@ -22,9 +22,8 @@ func init() {
 
 }
 
-func main() {
-
-	files, err := ioutil.ReadDir(apiRoot + "/themen")
+func readContentType(contentType string) {
+	files, err := ioutil.ReadDir(apiRoot + contentType)
 
 	if err != nil {
 		log.Fatalln("Failed to open:", err)
@@ -33,4 +32,9 @@ func main() {
 	for _, file := range files {
 		fmt.Println(file.Name())
 	}
+
+}
+
+func main() {
+	readContentType("/exkursionen")
 }
