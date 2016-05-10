@@ -14,6 +14,8 @@ var contentRoot string
 
 type Content []string
 
+//type ContentFileName string
+
 func init() {
 
 	// set lid repo root path
@@ -25,6 +27,32 @@ func init() {
 
 	applicationRoot, _ = os.Getwd()
 	contentRoot = applicationRoot + "/content"
+
+}
+
+func main() {
+	//readContentType("/themen")
+	//readConfig()
+	readContentFile("impressum")
+}
+
+func readConfig() {
+	file, err := ioutil.ReadFile(applicationRoot + "/config.toml")
+
+	if err != nil {
+		log.Fatalln("Failed to open:", err)
+	}
+	fmt.Println(string(file))
+}
+
+func readContentFile(fileName string) {
+	filePath := []string{contentRoot, "/meta/", fileName, ".md"}
+	file, err := ioutil.ReadFile(strings.Join(filePath, ""))
+
+	if err != nil {
+		log.Fatalln("Failed to open:", err)
+	}
+	fmt.Println(string(file))
 
 }
 
@@ -44,18 +72,4 @@ func readContentType(contentType string) {
 
 	fmt.Printf("%s\n", data)
 
-}
-
-func readConfig() {
-	file, err := ioutil.ReadFile(applicationRoot + "/config.toml")
-
-	if err != nil {
-		log.Fatalln("Failed to open:", err)
-	}
-	fmt.Println(string(file))
-}
-
-func main() {
-	readContentType("/")
-	//readConfig()
 }
