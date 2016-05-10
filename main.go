@@ -9,39 +9,53 @@ import (
 	"strings"
 )
 
-var apiRoot string
+var applicationRoot string
+var contentRoot string
+
+type Content []string
 
 func init() {
 
-	// set api root path
-	err := os.Chdir("/home/kossi/lid-site/content")
+	// set lid repo root path
+	err := os.Chdir("/home/kossi/lid-site/")
 
 	if err != nil {
 		fmt.Println("Can't change working directory")
 	}
 
-	apiRoot, _ = os.Getwd()
+	applicationRoot, _ = os.Getwd()
+	contentRoot = applicationRoot + "/content"
 
 }
 
 func readContentType(contentType string) {
-	files, err := ioutil.ReadDir(apiRoot + contentType)
+	files, err := ioutil.ReadDir(contentRoot + contentType)
 
 	if err != nil {
 		log.Fatalln("Failed to open:", err)
 	}
 
-	var content []string
+	var contentFile Content
 	for _, file := range files {
-		content = append(content, strings.TrimSuffix(file.Name(), ".md"))
+		contentFile = append(contentFile, strings.TrimSuffix(file.Name(), ".md"))
 	}
 
-	data, _ := json.MarshalIndent(content, "", "  ")
+	data, _ := json.MarshalIndent(contentFile, "", "  ")
 
 	fmt.Printf("%s\n", data)
 
 }
 
+func readConfig() {
+	file, err := ioutil.ReadFile(applicationRoot + "/config.toml")
+
+	if err != nil {
+		log.Fatalln("Failed to open:", err)
+	}
+	fmt.Println(string(file))
+}
+
 func main() {
-	readContentType("/exkursionen")
+	readContentType("/")
+	//readConfig()
 }
