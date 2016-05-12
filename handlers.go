@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"regexp"
 	"strings"
 
 	"github.com/gorilla/mux"
@@ -92,4 +93,38 @@ func ReadContentTypeFile(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	fmt.Fprintln(w, string(file))
 
+}
+
+func ReadSplitContentTypeFile(w http.ResponseWriter, r *http.Request) {
+
+	contentType := mux.Vars(r)["contentType"]
+	fileName := mux.Vars(r)["fileName"]
+	filePart := mux.Vars(r)["filePart"]
+	filePath := []string{contentRoot, contentType, "/", fileName, ".md"}
+
+	file, err := ioutil.ReadFile(strings.Join(filePath, ""))
+
+	if err != nil {
+		log.Fatalln("Failed to open:", err)
+	}
+
+	searchTerm := `[+]{3}([\s\S]+?)[+]{3}([\s\S]*)`
+	re := regexp.MustCompile(searchTerm)
+
+	switch filePart {
+	case "meta":
+		fileMeta := re.FindStringSubmatch(string(file))[1]
+		fileMetaJSON, _ := json.MarshalIndent(fileMeta, "", "  ")
+		fmt.Fprintln(w, string(fileMetaJSON))
+	case "content":
+		fileContent := re.FindStringSubmatch(string(file))[2]
+		fileContentJSON, _ := json.MarshalIndent(fileContent, "", "  ")
+		fmt.Fprintln(w, string(fileContentJSON))
+	default:
+		w.WriteHeader(http.StatusBadRequest)
+		fmt.Fprintln(w, "param does not exist")
+	}
+
+	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+	w.WriteHeader(http.StatusOK)
 }

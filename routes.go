@@ -21,6 +21,12 @@ var routes = Routes{
 		Index,
 	},
 	Route{
+		"config",
+		"GET",
+		"/config",
+		ReadConfig,
+	},
+	Route{
 		"ContentIndex",
 		"GET",
 		"/content",
@@ -37,5 +43,11 @@ var routes = Routes{
 		"GET",
 		"/content/{contentType}/{fileName}",
 		ReadContentTypeFile,
+	},
+	Route{
+		"SplitContentTypeFile",
+		"GET",
+		"/content/{contentType}/{fileName}/{filePart}",
+		ReadSplitContentTypeFile,
 	},
 }
