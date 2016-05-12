@@ -10,6 +10,7 @@ import (
 	"strings"
 
 	"github.com/gorilla/mux"
+	"github.com/pelletier/go-toml"
 )
 
 type Content []string
@@ -23,18 +24,24 @@ func Index(w http.ResponseWriter, r *http.Request) {
 
 func ReadConfig(w http.ResponseWriter, r *http.Request) {
 
+	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+
 	file, err := ioutil.ReadFile(applicationRoot + "/config.toml")
 
 	if err != nil {
 		log.Fatalln("Failed to open:", err)
 	}
 
-	w.Header().Set("Content-Type", "text/plain; charset=UTF-8")
+	tree, _ := toml.Load(string(file))
+	configJSON, _ := json.Marshal(tree.ToMap())
+
 	w.WriteHeader(http.StatusOK)
-	fmt.Fprintln(w, string(file))
+	fmt.Fprintln(w, string(configJSON))
 }
 
 func ReadContentIndex(w http.ResponseWriter, r *http.Request) {
+
+	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 
 	files, err := ioutil.ReadDir(contentRoot)
 
@@ -49,13 +56,14 @@ func ReadContentIndex(w http.ResponseWriter, r *http.Request) {
 
 	data, _ := json.MarshalIndent(contentFile, "", "  ")
 
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	w.WriteHeader(http.StatusOK)
 	fmt.Fprintf(w, string(data))
 
 }
 
 func ReadContentType(w http.ResponseWriter, r *http.Request) {
+
+	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 
 	contentType := mux.Vars(r)["contentType"]
 	files, err := ioutil.ReadDir(contentRoot + contentType)
@@ -71,13 +79,14 @@ func ReadContentType(w http.ResponseWriter, r *http.Request) {
 
 	data, _ := json.MarshalIndent(contentFile, "", "  ")
 
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	w.WriteHeader(http.StatusOK)
 	fmt.Fprintf(w, string(data))
 
 }
 
 func ReadContentTypeFile(w http.ResponseWriter, r *http.Request) {
+
+	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 
 	contentType := mux.Vars(r)["contentType"]
 	fileName := mux.Vars(r)["fileName"]
@@ -89,13 +98,14 @@ func ReadContentTypeFile(w http.ResponseWriter, r *http.Request) {
 		log.Fatalln("Failed to open:", err)
 	}
 
-	w.Header().Set("Content-Type", "text/plain; charset=UTF-8")
 	w.WriteHeader(http.StatusOK)
 	fmt.Fprintln(w, string(file))
 
 }
 
 func ReadSplitContentTypeFile(w http.ResponseWriter, r *http.Request) {
+
+	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 
 	contentType := mux.Vars(r)["contentType"]
 	fileName := mux.Vars(r)["fileName"]
@@ -114,7 +124,8 @@ func ReadSplitContentTypeFile(w http.ResponseWriter, r *http.Request) {
 	switch filePart {
 	case "meta":
 		fileMeta := re.FindStringSubmatch(string(file))[1]
-		fileMetaJSON, _ := json.MarshalIndent(fileMeta, "", "  ")
+		tree, _ := toml.Load(string(fileMeta))
+		fileMetaJSON, _ := json.Marshal(tree.ToMap())
 		fmt.Fprintln(w, string(fileMetaJSON))
 	case "content":
 		fileContent := re.FindStringSubmatch(string(file))[2]
@@ -125,6 +136,5 @@ func ReadSplitContentTypeFile(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintln(w, "param does not exist")
 	}
 
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	w.WriteHeader(http.StatusOK)
 }
