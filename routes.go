@@ -27,6 +27,12 @@ var routes = Routes{
 		ReadConfig,
 	},
 	Route{
+		"hugo",
+		"GET",
+		"/hugo",
+		RunHugo,
+	},
+	Route{
 		"ContentIndex",
 		"GET",
 		"/content",

@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"os/exec"
 	"regexp"
 	"strings"
 
@@ -137,4 +138,19 @@ func ReadSplitContentTypeFile(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(http.StatusOK)
+}
+
+func RunHugo(w http.ResponseWriter, r *http.Request) {
+
+	hugo := exec.Command("hugo")
+
+	fmt.Fprintln(w, "Run hugo in "+applicationRoot)
+
+	output, err := hugo.Output()
+	if err != nil {
+		log.Fatalln("Failed to open:", err)
+	}
+
+	fmt.Fprintln(w, string(output))
+
 }
