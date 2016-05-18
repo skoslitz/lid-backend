@@ -13,47 +13,88 @@ type Route struct {
 
 type Routes []Route
 
-var routes = Routes{
-	Route{
-		"Index",
-		"GET",
-		"/",
-		Index,
-	},
-	Route{
-		"config",
-		"GET",
-		"/config",
-		ReadConfig,
-	},
-	Route{
-		"hugo",
-		"GET",
-		"/hugo",
-		RunHugo,
-	},
-	Route{
-		"ContentIndex",
-		"GET",
-		"/content",
-		ReadContentIndex,
-	},
-	Route{
-		"ContentType",
-		"GET",
-		"/content/{contentType}",
-		ReadContentType,
-	},
-	Route{
-		"ContentTypeFile",
-		"GET",
-		"/content/{contentType}/{fileName}",
-		ReadContentTypeFile,
-	},
-	Route{
-		"SplitContentTypeFile",
-		"GET",
-		"/content/{contentType}/{fileName}/{filePart}",
-		ReadSplitContentTypeFile,
-	},
+func GetRoutes(h *Handlers) Routes {
+	return Routes{
+		// directories
+		Route{
+			"ReadDir",
+			"GET",
+			"/dir/{path:.*}",
+			h.ReadDir,
+		},
+		Route{
+			"CreateDir",
+			"POST",
+			"/dir/{path:.*}",
+			h.CreateDir,
+		},
+		Route{
+			"UpdateDir",
+			"PUT",
+			"/dir/{path:.*}",
+			h.UpdateDir,
+		},
+		Route{
+			"DeleteDir",
+			"DELETE",
+			"/dir/{path:.*}",
+			h.DeleteDir,
+		},
+
+		// pages
+		Route{
+			"ReadPage",
+			"GET",
+			"/page/{path:.*}",
+			h.ReadPage,
+		},
+		Route{
+			"CreatePage",
+			"POST",
+			"/page/{path:.*}",
+			h.CreatePage,
+		},
+		Route{
+			"UpdatePage",
+			"PUT",
+			"/page/{path:.*}",
+			h.UpdatePage,
+		},
+		Route{
+			"DeletePage",
+			"DELETE",
+			"/page/{path:.*}",
+			h.DeletePage,
+		},
+
+		// config
+		Route{
+			"ReadConfig",
+			"GET",
+			"/config",
+			h.ReadConfig,
+		},
+		Route{
+			"UpdateConfig",
+			"PUT",
+			"/config",
+			h.UpdateConfig,
+		},
+
+		// assets
+		Route{
+			"CreateAsset",
+			"POST",
+			"/asset/{path:.*}",
+			h.CreateAsset,
+		},
+
+		// misc
+		Route{
+			"PublishSite",
+			"POST",
+			"/site/publish",
+			h.PublishSite,
+		},
+	}
 }

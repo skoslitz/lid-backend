@@ -5,6 +5,9 @@ import (
 	"log"
 	"net/http"
 	"os"
+
+	"github.com/skoslitz/lid-backend/lidlib"
+	"github.com/spf13/viper"
 )
 
 var applicationRoot string
@@ -26,8 +29,34 @@ func init() {
 
 func main() {
 
-	router := NewRouter()
+	// setup config file
+	viper.SetConfigName("config")
+	viper.ReadInConfig()
 
+	// set config defaults
+	viper.SetDefault("ContentDir", contentRoot)
+	viper.SetDefault("AdminDir", "admin")
+	viper.SetDefault("AssetsDir", applicationRoot+"/static")
+
+	contentDir := viper.GetString("ContentDir")
+	assetsDir := viper.GetString("AssetsDir")
+
+	// create router
+	router := NewRouter(&RouterConfig{
+		Handlers: &Handlers{
+			Config:     lidlib.NewConfig(applicationRoot + "/config.toml"),
+			Dir:        lidlib.NewDir(),
+			Page:       lidlib.NewPage(),
+			ContentDir: contentDir,
+			AssetsDir:  assetsDir,
+		},
+		AdminDir: viper.GetString("AdminDir"),
+	})
+
+	// start http server
+	fmt.Println("Starting server on localhost:1313")
+	fmt.Println("Content in ", contentDir)
+	fmt.Println("Assets in ", assetsDir)
 	log.Fatal(http.ListenAndServe("localhost:1313", router))
 
 }

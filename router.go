@@ -6,22 +6,36 @@ import (
 	"github.com/gorilla/mux"
 )
 
-func NewRouter() *mux.Router {
+type RouterConfig struct {
+	Handlers *Handlers
+	AdminDir string
+}
 
-	//router := mux.NewRouter().StrictSlash(true)
+func NewRouter(config *RouterConfig) *mux.Router {
 	router := mux.NewRouter()
-	for _, route := range routes {
+	apiRouter := router.PathPrefix("/api").Subrouter()
+
+	// load routes from routes.go
+	for _, route := range GetRoutes(config.Handlers) {
 		var handler http.Handler
 
 		handler = route.HandlerFunc
 		handler = Logger(handler, route.Name)
 
-		router.
+		apiRouter.
 			Methods(route.Method).
 			Path(route.Pattern).
 			Name(route.Name).
 			Handler(handler)
 	}
+
+	// serve assets from static folder
+	assetsFs := http.FileServer(http.Dir(config.Handlers.AssetsDir))
+	router.PathPrefix("/assets").Handler(http.StripPrefix("/assets/", assetsFs))
+
+	// serve admin client files (html, css, etc)
+	adminFs := http.FileServer(http.Dir(config.AdminDir))
+	router.PathPrefix("/").Handler(adminFs)
 
 	return router
 }

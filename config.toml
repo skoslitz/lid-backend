@@ -1,0 +1,3 @@
+ContentDir = "content"
+AdminDir = "admin/dist"
+AssetsDir = "static"
