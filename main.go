@@ -12,6 +12,7 @@ import (
 
 var applicationRoot string
 var contentRoot string
+var adminRoot string
 
 func init() {
 
@@ -24,6 +25,7 @@ func init() {
 
 	applicationRoot, _ = os.Getwd()
 	contentRoot = applicationRoot + "/content/"
+	adminRoot = ("/home/kossi/lid-frontend/app")
 
 }
 
@@ -35,7 +37,7 @@ func main() {
 
 	// set config defaults
 	viper.SetDefault("ContentDir", contentRoot)
-	viper.SetDefault("AdminDir", "admin")
+	viper.SetDefault("AdminDir", adminRoot)
 	viper.SetDefault("AssetsDir", applicationRoot+"/static")
 
 	contentDir := viper.GetString("ContentDir")
@@ -57,6 +59,7 @@ func main() {
 	fmt.Println("Starting server on localhost:1313")
 	fmt.Println("Content in ", contentDir)
 	fmt.Println("Assets in ", assetsDir)
+	fmt.Println("Admin in ", adminRoot)
 	log.Fatal(http.ListenAndServe("localhost:1313", router))
 
 }

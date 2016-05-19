@@ -1,13 +1,15 @@
 package lidlib
 
-import "os"
+import (
+	"os"
+)
 
 type File struct {
 	Name    string `json:"name"`
 	Path    string `json:"path"`
 	IsDir   bool   `json:"isDir"`
 	Size    int64  `json:"size"`
-	ModTime int64  `json:"modTime"`
+	ModTime string `json:"modTime"`
 }
 
 type Files []*File
@@ -22,5 +24,5 @@ func (f *File) Load(info os.FileInfo) {
 	f.Name = info.Name()
 	f.IsDir = info.IsDir()
 	f.Size = info.Size()
-	f.ModTime = info.ModTime().Unix()
+	f.ModTime = info.ModTime().Format("02/01/2006")
 }
