@@ -28,5 +28,6 @@ func printError(w http.ResponseWriter, err interface{}) {
 
 func printJson(w http.ResponseWriter, obj interface{}) {
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
 	json.NewEncoder(w).Encode(obj)
 }
