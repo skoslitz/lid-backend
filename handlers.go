@@ -136,6 +136,7 @@ func (h Handlers) UpdateDir(w http.ResponseWriter, r *http.Request) {
 	printJson(w, &updateDirResponse{Dir: dir})
 }
 
+// TODO: make this more safe with captcha
 // DeleteDir deletes a directory
 func (h Handlers) DeleteDir(w http.ResponseWriter, r *http.Request) {
 	fp, err := h.fixPathWithDir(mux.Vars(r)["path"], h.ContentDir)
@@ -277,6 +278,7 @@ func (h Handlers) UpdatePage(w http.ResponseWriter, r *http.Request) {
 	printJson(w, &updatePageResponse{Page: page})
 }
 
+// TODO: make this more safe with captcha
 // DeletePage deletes a page
 func (h Handlers) DeletePage(w http.ResponseWriter, r *http.Request) {
 	fp, err := h.fixPathWithDir(mux.Vars(r)["path"], h.ContentDir)
