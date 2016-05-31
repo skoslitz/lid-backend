@@ -2,9 +2,11 @@ package lidlib
 
 import (
 	"os"
+	"strings"
 )
 
 type File struct {
+	Id    string `json:"id"`
 	Name    string `json:"name"`
 	Path    string `json:"path"`
 	IsDir   bool   `json:"isDir"`
@@ -21,6 +23,8 @@ func NewFile(path string, info os.FileInfo) *File {
 	return file
 }
 func (f *File) Load(info os.FileInfo) {
+	id := strings.Split(info.Name(), "-")
+	f.Id = 	id[0]
 	f.Name = info.Name()
 	f.IsDir = info.IsDir()
 	f.Size = info.Size()
