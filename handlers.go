@@ -65,6 +65,39 @@ func (h Handlers) ReadDir(w http.ResponseWriter, r *http.Request) {
 	printJson(w, &readDirResponse{Data: contents})
 }
 
+// readDir reads contents of a directory
+func (h Handlers) ReadDirEdition(w http.ResponseWriter, r *http.Request) {
+	fp, err := h.fixPathWithDir(mux.Vars(r)["path"], h.ContentDir)
+	if err != nil {
+		errInvalidDir.Write(w)
+		return
+	}
+
+	// read edition to filter
+	var editionNumber string
+	editionNumber = mux.Vars(r)["edition"]
+	if err != nil {
+		errInvalidDir.Write(w)
+		return
+	}
+
+	// try and read contents of dir
+	var contents lidlib.Files
+	contents, err = h.Dir.Read(fp)
+	if err != nil {
+		errDirNotFound.Write(w)
+		return
+	}
+
+	// trim content prefix
+	for _, item := range contents {
+		item.Path = strings.TrimPrefix(item.Path, h.ContentDir)
+	}
+
+	// printJson(w, &readDirResponse{Data: contents})
+	printJson(w, editionNumber)
+}
+
 // createDir creates a directory
 func (h Handlers) CreateDir(w http.ResponseWriter, r *http.Request) {
 

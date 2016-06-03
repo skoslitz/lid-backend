@@ -19,8 +19,14 @@ func GetRoutes(h *Handlers) Routes {
 		Route{
 			"ReadDir",
 			"GET",
-			"/dir/{path:.*}",
+			"/dir/{path}",
 			h.ReadDir,
+		},
+		Route{
+			"ReadDirEdition",
+			"GET",
+			"/dir/{path:.*}/{edition:[0-9]+}",
+			h.ReadDirEdition,
 		},
 		Route{
 			"CreateDir",
