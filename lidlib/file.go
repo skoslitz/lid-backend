@@ -12,6 +12,7 @@ type File struct {
 	IsDir   bool   `json:"isDir"`
 	Size    int64  `json:"size"`
 	ModTime string `json:"modTime"`
+	Edition string `json:"edition"`
 }
 
 type Files []*File
@@ -23,8 +24,8 @@ func NewFile(path string, info os.FileInfo) *File {
 	return file
 }
 func (f *File) Load(info os.FileInfo) {
-	id := strings.Split(info.Name(), "-")
-	f.Id = 	id[0]
+	f.Id = strings.Split(info.Name(), "-")[0]
+	f.Edition = strings.Split(f.Id, "_")[0]
 	f.Name = info.Name()
 	f.IsDir = info.IsDir()
 	f.Size = info.Size()
