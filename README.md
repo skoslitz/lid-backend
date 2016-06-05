@@ -7,6 +7,7 @@
 
 #### Directories
 - Read Dir: GET /dir/{dirname}/
+- Read Dir | Edition Filter: GET /dir/{dirname}/{editionNumber}
 - Create Dir: POST /dir/{dirname}
 - Update Dir: PUT /dir/{dirname}
 - Delete Dir: DELETE /dir/{dirname}
