@@ -90,12 +90,16 @@ func (h Handlers) ReadDirEdition(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// trim content prefix
-	for _, item := range contents {
-		item.Path = strings.TrimPrefix(item.Path, h.ContentDir)
+	for i, item := range contents {
+	  if editionNumber == item.Edition {
+	    item.Path = strings.TrimPrefix(item.Path, h.ContentDir)
+	  } else {
+	    contents[i] = nil
+	  }
 	}
 
-	// printJson(w, &readDirResponse{Data: contents})
-	printJson(w, editionNumber)
+	printJson(w, &readDirResponse{Data: contents})
+	
 }
 
 // createDir creates a directory
