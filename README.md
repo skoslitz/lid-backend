@@ -1,5 +1,12 @@
-# lid-backend
-## content api for lid
+# lid-backend - content api for lid
+
+## Installation:
+
+- First, install [golang](https://golang.org/doc/install#install)
+- Then: `go get github.com/skoslitz/lid-backend`
+- Edit `main.go` on line 20 to specify content repo path
+- Compile with `go build`
+- Run with `./lid-backend`
 
 ### Endpoints:
 
