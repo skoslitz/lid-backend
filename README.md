@@ -21,7 +21,6 @@
 
 Example*: `PUT dir/themen --form dir[name]="themen-neu"`
 
-* - under usage of [http-prompt](https://github.com/eliangcs/http-prompt)
 #### Pages
 - Read Page: GET /page/{path}/
 - Create Page: POST /page/{path}
@@ -33,3 +32,6 @@ Example*: `PUT page/themen/77_B_000.md --form page[meta]={\"title\": \"Beitragst
 #### Config
 - Read Config: GET /config
 - Update Config: PUT /config
+
+
+*: under usage of [http-prompt](https://github.com/eliangcs/http-prompt)
