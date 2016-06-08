@@ -12,18 +12,23 @@
 
 #### Basepath: /api
 
-#### Directories
+#### Directories (Items in your repo `/content` folder)
 - Read Dir: GET /dir/{dirname}/
 - Read Dir | Edition Filter: GET /dir/{dirname}/{editionNumber}
 - Create Dir: POST /dir/{dirname}
 - Update Dir: PUT /dir/{dirname}
 - Delete Dir: DELETE /dir/{dirname}
 
+Example*: `PUT dir/themen --form dir[name]="themen-neu"`
+
+* - under usage of [http-prompt](https://github.com/eliangcs/http-prompt)
 #### Pages
 - Read Page: GET /page/{path}/
 - Create Page: POST /page/{path}
 - Update Page: PUT /page/{path}
 - Delete Page: DELETE /page/{path}
+
+Example*: `PUT page/themen/77_B_000.md --form page[meta]={\"title\": \"Beitragstitel\"} page[content]="text string"`
 
 #### Config
 - Read Config: GET /config
