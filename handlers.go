@@ -91,15 +91,15 @@ func (h Handlers) ReadDirEdition(w http.ResponseWriter, r *http.Request) {
 
 	// trim content prefix
 	for i, item := range contents {
-	  if editionNumber == item.Edition {
-	    item.Path = strings.TrimPrefix(item.Path, h.ContentDir)
-	  } else {
-	    contents[i] = nil
-	  }
+		if editionNumber == item.Edition {
+			item.Path = strings.TrimPrefix(item.Path, h.ContentDir)
+		} else {
+			contents[i] = nil
+		}
 	}
 
 	printJson(w, &readDirResponse{Data: contents})
-	
+
 }
 
 // createDir creates a directory
@@ -230,6 +230,13 @@ func (h Handlers) ReadPage(w http.ResponseWriter, r *http.Request) {
 
 	// trim content prefix from path
 	page.Path = strings.TrimPrefix(page.Path, h.ContentDir)
+
+	// search for region related topics/excursions
+	if strings.Contains(page.Path, "regionen") {
+		fmt.Println("regionen was detected. Add region related themen and excursions.")
+		// Apend url to page.Ressources.Themen Slice
+		page.Ressources.Themen = append(page.Ressources.Themen, "url")
+	}
 
 	// print json
 	printJson(w, &readPageResponse{Page: page})
