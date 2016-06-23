@@ -26,6 +26,7 @@ type Frontmatter map[string]interface{}
 type Relationship struct {
 	Themen      []string `json:"themen"`
 	Exkursionen []string `json:"exkursionen"`
+	Region      []string `json:"region"`
 }
 
 // Page represents a markdown file
