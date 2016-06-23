@@ -231,7 +231,7 @@ func (h Handlers) ReadPage(w http.ResponseWriter, r *http.Request) {
 	// trim content prefix from path
 	page.Path = strings.TrimPrefix(page.Path, h.ContentDir)
 
-	// RESSOURCES ----------------------------------------------------------------------
+	// Relationships ----------------------------------------------------------------------
 
 	// search for region related topics/excursions
 	// TODO: make this a function
@@ -254,7 +254,7 @@ func (h Handlers) ReadPage(w http.ResponseWriter, r *http.Request) {
 		for _, item := range themenContents {
 
 			if item.Edition == bandNummer {
-				page.Ressources.Themen = append(page.Ressources.Themen, strings.Join([]string{ApiPageUrl, strings.TrimPrefix(item.Path, h.ContentDir)}, ""))
+				page.Relationships.Themen = append(page.Relationships.Themen, strings.Join([]string{ApiPageUrl, strings.TrimPrefix(item.Path, h.ContentDir)}, ""))
 			}
 		}
 
@@ -269,7 +269,7 @@ func (h Handlers) ReadPage(w http.ResponseWriter, r *http.Request) {
 		// append related contents to ressource
 		for _, item := range exkursionenContents {
 			if item.Edition == bandNummer {
-				page.Ressources.Exkursionen = append(page.Ressources.Exkursionen, strings.Join([]string{ApiPageUrl, strings.TrimPrefix(item.Path, h.ContentDir)}, ""))
+				page.Relationships.Exkursionen = append(page.Relationships.Exkursionen, strings.Join([]string{ApiPageUrl, strings.TrimPrefix(item.Path, h.ContentDir)}, ""))
 			}
 		}
 
