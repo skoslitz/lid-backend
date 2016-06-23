@@ -231,11 +231,48 @@ func (h Handlers) ReadPage(w http.ResponseWriter, r *http.Request) {
 	// trim content prefix from path
 	page.Path = strings.TrimPrefix(page.Path, h.ContentDir)
 
+	// RESSOURCES ----------------------------------------------------------------------
+
 	// search for region related topics/excursions
+	// TODO: make this a function
 	if strings.Contains(page.Path, "regionen") {
-		fmt.Println("regionen was detected. Add region related themen and excursions.")
-		// Apend url to page.Ressources.Themen Slice
-		page.Ressources.Themen = append(page.Ressources.Themen, "url")
+
+		bandNummer := fmt.Sprintf("%d", page.Metadata["bandnummer"])
+		var ApiPageUrl = strings.Join([]string{r.Host, "/api/page/"}, "")
+		var themenPath = strings.Join([]string{h.ContentDir, "themen"}, "")
+		var exkursionenPath = strings.Join([]string{h.ContentDir, "exkursionen"}, "")
+
+		// try and read contents of themen dir
+		var themenContents lidlib.Files
+		themenContents, err = h.Dir.Read(themenPath)
+		if err != nil {
+			errDirNotFound.Write(w)
+			return
+		}
+
+		// append related contents to ressource
+		for _, item := range themenContents {
+
+			if item.Edition == bandNummer {
+				page.Ressources.Themen = append(page.Ressources.Themen, strings.Join([]string{ApiPageUrl, strings.TrimPrefix(item.Path, h.ContentDir)}, ""))
+			}
+		}
+
+		// try and read contents of exkursionen dir
+		var exkursionenContents lidlib.Files
+		exkursionenContents, err = h.Dir.Read(exkursionenPath)
+		if err != nil {
+			errDirNotFound.Write(w)
+			return
+		}
+
+		// append related contents to ressource
+		for _, item := range exkursionenContents {
+			if item.Edition == bandNummer {
+				page.Ressources.Exkursionen = append(page.Ressources.Exkursionen, strings.Join([]string{ApiPageUrl, strings.TrimPrefix(item.Path, h.ContentDir)}, ""))
+			}
+		}
+
 	}
 
 	// print json

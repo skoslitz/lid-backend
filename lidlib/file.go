@@ -6,7 +6,7 @@ import (
 )
 
 type File struct {
-	Id    string `json:"id"`
+	Id      string `json:"id"`
 	Name    string `json:"name"`
 	Path    string `json:"path"`
 	IsDir   bool   `json:"isDir"`

@@ -33,7 +33,7 @@ type PageFile struct {
 	Path       string      `json:"path"`
 	Metadata   Frontmatter `json:"metadata"`
 	Content    string      `json:"content"`
-	Ressources Ressource   `json:"Ressources"`
+	Ressources Ressource   `json:"ressources"`
 }
 
 func (p *PageFile) Save() error {
