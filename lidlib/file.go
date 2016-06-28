@@ -31,5 +31,4 @@ func (f *File) Load(info os.FileInfo) {
 	f.IsDir = info.IsDir()
 	f.Size = info.Size()
 	f.ModTime = info.ModTime().Format("02/01/2006")
-	f.Link = "ApiUrlToFile"
 }

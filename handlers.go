@@ -43,6 +43,9 @@ type updateDirResponse struct {
 
 // readDir reads contents of a directory
 func (h Handlers) ReadDir(w http.ResponseWriter, r *http.Request) {
+
+	var ApiPageUrl = strings.Join([]string{r.Host, "/api/page/"}, "")
+
 	fp, err := h.fixPathWithDir(mux.Vars(r)["path"], h.ContentDir)
 	if err != nil {
 		errInvalidDir.Write(w)
@@ -60,6 +63,7 @@ func (h Handlers) ReadDir(w http.ResponseWriter, r *http.Request) {
 	// trim content prefix
 	for _, item := range contents {
 		item.Path = strings.TrimPrefix(item.Path, h.ContentDir)
+		item.Link = strings.Join([]string{ApiPageUrl, item.Path}, "")
 	}
 
 	printJson(w, &readDirResponse{Data: contents})
@@ -67,6 +71,9 @@ func (h Handlers) ReadDir(w http.ResponseWriter, r *http.Request) {
 
 // readDir reads contents of a directory
 func (h Handlers) ReadDirEdition(w http.ResponseWriter, r *http.Request) {
+
+	var ApiPageUrl = strings.Join([]string{r.Host, "/api/page/"}, "")
+
 	fp, err := h.fixPathWithDir(mux.Vars(r)["path"], h.ContentDir)
 	if err != nil {
 		errInvalidDir.Write(w)
@@ -93,6 +100,7 @@ func (h Handlers) ReadDirEdition(w http.ResponseWriter, r *http.Request) {
 	for i, item := range contents {
 		if editionNumber == item.Edition {
 			item.Path = strings.TrimPrefix(item.Path, h.ContentDir)
+			item.Link = strings.Join([]string{ApiPageUrl, item.Path}, "")
 		} else {
 			contents[i] = nil
 		}
