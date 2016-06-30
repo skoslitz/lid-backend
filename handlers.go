@@ -239,12 +239,12 @@ func (h Handlers) ReadPage(w http.ResponseWriter, r *http.Request) {
 	// trim content prefix from path
 	page.Path = strings.TrimPrefix(page.Path, h.ContentDir)
 
-	// add asset path to relationships
+	// add asset path to Links
 	bandNummer := fmt.Sprintf("%d", page.Metadata["bandnummer"])
 	var ApiAssetUrl = strings.Join([]string{r.Host, "/assets/img/", bandNummer}, "")
-	page.Relationships.Assets = ApiAssetUrl
+	page.Links.Assets = ApiAssetUrl
 
-	// Relationships ----------------------------------------------------------------------
+	// Links ----------------------------------------------------------------------
 
 	// search for region related topics/excursions
 	// TODO: make this a function
@@ -267,7 +267,7 @@ func (h Handlers) ReadPage(w http.ResponseWriter, r *http.Request) {
 		for _, item := range themenContents {
 
 			if item.Edition == bandNummer {
-				page.Relationships.Themen = append(page.Relationships.Themen, strings.Join([]string{ApiPageUrl, strings.TrimPrefix(item.Path, h.ContentDir)}, ""))
+				page.Links.Themen = append(page.Links.Themen, strings.Join([]string{ApiPageUrl, strings.TrimPrefix(item.Path, h.ContentDir)}, ""))
 			}
 		}
 
@@ -282,7 +282,7 @@ func (h Handlers) ReadPage(w http.ResponseWriter, r *http.Request) {
 		// append related contents to ressource
 		for _, item := range exkursionenContents {
 			if item.Edition == bandNummer {
-				page.Relationships.Exkursionen = append(page.Relationships.Exkursionen, strings.Join([]string{ApiPageUrl, strings.TrimPrefix(item.Path, h.ContentDir)}, ""))
+				page.Links.Exkursionen = append(page.Links.Exkursionen, strings.Join([]string{ApiPageUrl, strings.TrimPrefix(item.Path, h.ContentDir)}, ""))
 			}
 		}
 
@@ -309,7 +309,7 @@ func (h Handlers) ReadPage(w http.ResponseWriter, r *http.Request) {
 		for _, item := range regionenContents {
 
 			if item.Edition == bandNummer {
-				page.Relationships.Region = append(page.Relationships.Region, strings.Join([]string{ApiPageUrl, strings.TrimPrefix(item.Path, h.ContentDir)}, ""))
+				page.Links.Region = append(page.Links.Region, strings.Join([]string{ApiPageUrl, strings.TrimPrefix(item.Path, h.ContentDir)}, ""))
 			}
 		}
 
@@ -336,7 +336,7 @@ func (h Handlers) ReadPage(w http.ResponseWriter, r *http.Request) {
 		for _, item := range regionenContents {
 
 			if item.Edition == bandNummer {
-				page.Relationships.Region = append(page.Relationships.Region, strings.Join([]string{ApiPageUrl, strings.TrimPrefix(item.Path, h.ContentDir)}, ""))
+				page.Links.Region = append(page.Links.Region, strings.Join([]string{ApiPageUrl, strings.TrimPrefix(item.Path, h.ContentDir)}, ""))
 			}
 		}
 

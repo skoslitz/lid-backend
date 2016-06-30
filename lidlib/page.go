@@ -22,8 +22,8 @@ const YAML = '-'
 // Frontmatter stores encodeable data
 type Frontmatter map[string]interface{}
 
-// Relationship stores region related article urls
-type Relationship struct {
+// Link stores region related article urls
+type Link struct {
 	Themen      []string `json:"themen"`
 	Exkursionen []string `json:"exkursionen"`
 	Region      []string `json:"region"`
@@ -32,10 +32,10 @@ type Relationship struct {
 
 // Page represents a markdown file
 type PageFile struct {
-	Path          string       `json:"path"`
-	Metadata      Frontmatter  `json:"metadata"`
-	Content       string       `json:"content"`
-	Relationships Relationship `json:"relationships"`
+	Path     string      `json:"path"`
+	Metadata Frontmatter `json:"metadata"`
+	Content  string      `json:"content"`
+	Links    Link        `json:"links"`
 }
 
 func (p *PageFile) Save() error {
