@@ -239,6 +239,11 @@ func (h Handlers) ReadPage(w http.ResponseWriter, r *http.Request) {
 	// trim content prefix from path
 	page.Path = strings.TrimPrefix(page.Path, h.ContentDir)
 
+	// add asset path to relationships
+	bandNummer := fmt.Sprintf("%d", page.Metadata["bandnummer"])
+	var ApiAssetUrl = strings.Join([]string{r.Host, "/assets/img/", bandNummer}, "")
+	page.Relationships.Assets = ApiAssetUrl
+
 	// Relationships ----------------------------------------------------------------------
 
 	// search for region related topics/excursions

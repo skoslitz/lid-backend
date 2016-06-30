@@ -27,6 +27,7 @@ type Relationship struct {
 	Themen      []string `json:"themen"`
 	Exkursionen []string `json:"exkursionen"`
 	Region      []string `json:"region"`
+	Assets      string   `json:"assets"`
 }
 
 // Page represents a markdown file
