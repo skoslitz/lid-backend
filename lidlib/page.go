@@ -2,14 +2,14 @@ package lidlib
 
 import (
 	"errors"
-	"os"
-	"path/filepath"
-	"strconv"
-
+	"fmt"
 	"github.com/kennygrant/sanitize"
 	"github.com/spf13/cast"
 	"github.com/spf13/hugo/hugolib"
 	"github.com/spf13/hugo/parser"
+	"os"
+	"path/filepath"
+	"strconv"
 )
 
 //  ┌┬┐┬ ┬┌─┐┌─┐┌─┐
@@ -18,6 +18,10 @@ import (
 
 const TOML = '+'
 const YAML = '-'
+
+type PageFileJSON struct {
+	PageFile PageFile `json:"page"`
+}
 
 // Frontmatter stores encodeable data
 type Frontmatter map[string]interface{}
@@ -30,7 +34,7 @@ type Link struct {
 	Assets      string   `json:"assets"`
 }
 
-// Page represents a markdown file
+// PageFile represents a markdown file
 type PageFile struct {
 	Path     string      `json:"path"`
 	Metadata Frontmatter `json:"metadata"`
@@ -190,10 +194,7 @@ func (p Page) Delete(fp string) error {
 //  ├─┤├┤ │  ├─┘├┤ ├┬┘└─┐
 //  ┴ ┴└─┘┴─┘┴  └─┘┴└─└─┘
 
-// generateFilePath generates a filepath based on a page title
-// if the filename already exists, add a number on the end
-// if that exists, increment the number by one until we find a filename
-// that doesn't exist
+// generateFilePath
 func generateFilePath(dirname, title string) (fp string) {
 	count := 0
 
@@ -218,7 +219,8 @@ func generateFilePath(dirname, title string) (fp string) {
 		count += 1
 	}
 
-	return fp
+	fmt.Println(fp)
+	return dirname
 }
 
 func getTitle(fm Frontmatter) (string, error) {

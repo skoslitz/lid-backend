@@ -239,12 +239,13 @@ func (h Handlers) ReadPage(w http.ResponseWriter, r *http.Request) {
 	// trim content prefix from path
 	page.Path = strings.TrimPrefix(page.Path, h.ContentDir)
 
+	//
+	// Links ----------------------------------------------------------------------
+
 	// add asset path to Links
 	bandNummer := fmt.Sprintf("%d", page.Metadata["bandnummer"])
 	var ApiAssetUrl = strings.Join([]string{r.Host, "/assets/img/", bandNummer}, "")
 	page.Links.Assets = ApiAssetUrl
-
-	// Links ----------------------------------------------------------------------
 
 	// search for region related topics/excursions
 	// TODO: make this a function
@@ -348,31 +349,20 @@ func (h Handlers) ReadPage(w http.ResponseWriter, r *http.Request) {
 
 // createPage creates a new page
 func (h Handlers) CreatePage(w http.ResponseWriter, r *http.Request) {
+
+	// parse the incoming pageFile
+	var pageFileJSON lidlib.PageFileJSON
+	err := json.NewDecoder(r.Body).Decode(&pageFileJSON)
+
 	fp, err := h.fixPathWithDir(mux.Vars(r)["path"], h.ContentDir)
 	if err != nil {
 		fmt.Fprint(w, err)
 		return
 	}
 
-	// check that parent dir exists
-	if fileExists(fp) || dirExists(fp) == false {
-		errDirNotFound.Write(w)
-		return
-	}
+	metadata := pageFileJSON.PageFile.Metadata
 
-	metastring := r.FormValue("page[meta]")
-	if len(metastring) == 0 {
-		errNoMeta.Write(w)
-	}
-
-	metadata := lidlib.Frontmatter{}
-	err = json.Unmarshal([]byte(metastring), &metadata)
-	if err != nil {
-		errInvalidJson.Write(w)
-		return
-	}
-
-	content := []byte(r.FormValue("page[content]"))
+	content := []byte(pageFileJSON.PageFile.Content)
 
 	page, err := h.Page.Create(fp, metadata, content)
 	if err != nil {
@@ -384,8 +374,11 @@ func (h Handlers) CreatePage(w http.ResponseWriter, r *http.Request) {
 	page.Path = strings.TrimPrefix(page.Path, h.ContentDir)
 
 	printJson(w, &createPageResponse{Page: page})
+
 }
 
+// !! TODO !!
+// make this working like CreatePage
 // updatePage writes page data to a file
 func (h Handlers) UpdatePage(w http.ResponseWriter, r *http.Request) {
 	fp, err := h.fixPathWithDir(mux.Vars(r)["path"], h.ContentDir)
