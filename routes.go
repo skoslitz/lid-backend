@@ -62,7 +62,7 @@ func GetRoutes(h *Handlers) Routes {
 		},
 		Route{
 			"UpdatePage",
-			"PUT",
+			"OPTIONS",
 			"/page/{path:.*}",
 			h.UpdatePage,
 		},

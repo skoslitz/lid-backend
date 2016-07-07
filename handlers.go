@@ -385,6 +385,7 @@ func (h Handlers) UpdatePage(w http.ResponseWriter, r *http.Request) {
 	// parse the incoming pageFile
 	var pageFileJSON lidlib.PageFileJSON
 	err := json.NewDecoder(r.Body).Decode(&pageFileJSON)
+	fmt.Println(pageFileJSON)
 
 	fp, err := h.fixPathWithDir(mux.Vars(r)["path"], h.ContentDir)
 	if err != nil {

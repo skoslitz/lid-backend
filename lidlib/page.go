@@ -37,6 +37,7 @@ type Link struct {
 // PageFile represents a markdown file
 type PageFile struct {
 	Path     string      `json:"path"`
+	Id       string      `json:"id"`
 	Filename string      `json:"filename"`
 	Metadata Frontmatter `json:"metadata"`
 	Content  string      `json:"content"`
@@ -108,6 +109,7 @@ func (p Page) Read(fp string) (*PageFile, error) {
 	// assemble a new Page instance
 	return &PageFile{
 		Path:     fp,
+		Id:       filename,
 		Filename: filename,
 		Metadata: metadata,
 		Content:  string(parser.Content()),
@@ -158,8 +160,7 @@ func (p Page) Update(fp string, fm Frontmatter, content []byte) (*PageFile, erro
 	}
 
 	// the filepath for the page
-	dirname := filepath.Dir(fp)
-	fp = generateFilePath(dirname, title)
+	fp = generateFilePath(fp, title)
 
 	// create a new page
 	page := &PageFile{

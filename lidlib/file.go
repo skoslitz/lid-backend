@@ -32,12 +32,12 @@ func (f *File) Load(info os.FileInfo) {
 	re := regexp.MustCompile(searchTerm)
 	prefix := re.FindStringSubmatch(string(info.Name()))[1]
 
-	f.Id = strings.Split(info.Name(), "-")[0]
+	f.Id = info.Name()
 	f.FileName = info.Name()
 	f.IsDir = info.IsDir()
 	f.Size = info.Size()
 	f.ModTime = info.ModTime().Format("02/01/2006")
-	f.Edition = strings.Split(f.Id, "_")[0]
+	f.Edition = strings.Split(strings.Split(info.Name(), "-")[0], "_")[0]
 	_nameTrimSuffix := strings.TrimSuffix(info.Name(), ".md")
 	_nameTrimPrefix := strings.TrimPrefix(_nameTrimSuffix, prefix)
 	_nameTrimDash := strings.Replace(_nameTrimPrefix, "-", " ", -1)
