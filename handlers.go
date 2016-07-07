@@ -381,31 +381,20 @@ func (h Handlers) CreatePage(w http.ResponseWriter, r *http.Request) {
 // make this working like CreatePage
 // updatePage writes page data to a file
 func (h Handlers) UpdatePage(w http.ResponseWriter, r *http.Request) {
+
+	// parse the incoming pageFile
+	var pageFileJSON lidlib.PageFileJSON
+	err := json.NewDecoder(r.Body).Decode(&pageFileJSON)
+
 	fp, err := h.fixPathWithDir(mux.Vars(r)["path"], h.ContentDir)
 	if err != nil {
 		fmt.Fprint(w, err)
 		return
 	}
 
-	// check that existing page exists
-	if dirExists(fp) || fileExists(fp) == false {
-		errPageNotFound.Write(w)
-		return
-	}
+	metadata := pageFileJSON.PageFile.Metadata
 
-	metastring := r.FormValue("page[meta]")
-	if len(metastring) == 0 {
-		errNoMeta.Write(w)
-	}
-
-	metadata := lidlib.Frontmatter{}
-	err = json.Unmarshal([]byte(metastring), &metadata)
-	if err != nil {
-		fmt.Fprint(w, err)
-		return
-	}
-
-	content := []byte(r.FormValue("page[content]"))
+	content := []byte(pageFileJSON.PageFile.Content)
 
 	page, err := h.Page.Update(fp, metadata, content)
 	if err != nil {
