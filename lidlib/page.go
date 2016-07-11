@@ -38,7 +38,6 @@ type Link struct {
 type PageFile struct {
 	Path     string      `json:"path"`
 	Id       string      `json:"id"`
-	Filename string      `json:"filename"`
 	Metadata Frontmatter `json:"metadata"`
 	Content  string      `json:"content"`
 	Links    Link        `json:"links"`
@@ -110,7 +109,6 @@ func (p Page) Read(fp string) (*PageFile, error) {
 	return &PageFile{
 		Path:     fp,
 		Id:       filename,
-		Filename: filename,
 		Metadata: metadata,
 		Content:  string(parser.Content()),
 	}, nil

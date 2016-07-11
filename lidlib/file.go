@@ -7,15 +7,14 @@ import (
 )
 
 type File struct {
-	Id       string `json:"id"`
-	FileName string `json:"fileName"`
-	Name     string `json:"name"`
-	Path     string `json:"path"`
-	IsDir    bool   `json:"isDir"`
-	Size     int64  `json:"size"`
-	ModTime  string `json:"modTime"`
-	Edition  string `json:"edition"`
-	Link     string `json:"link"`
+	Id      string `json:"id"`
+	Name    string `json:"name"`
+	Path    string `json:"path"`
+	IsDir   bool   `json:"isDir"`
+	Size    int64  `json:"size"`
+	ModTime string `json:"modTime"`
+	Edition string `json:"edition"`
+	Link    string `json:"link"`
 }
 
 type Files []*File
@@ -33,7 +32,6 @@ func (f *File) Load(info os.FileInfo) {
 	prefix := re.FindStringSubmatch(string(info.Name()))[1]
 
 	f.Id = info.Name()
-	f.FileName = info.Name()
 	f.IsDir = info.IsDir()
 	f.Size = info.Size()
 	f.ModTime = info.ModTime().Format("02/01/2006")
