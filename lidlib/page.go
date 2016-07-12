@@ -2,14 +2,14 @@ package lidlib
 
 import (
 	"errors"
-	"fmt"
+	"os"
+	"path/filepath"
+	"strconv"
+
 	"github.com/kennygrant/sanitize"
 	"github.com/spf13/cast"
 	"github.com/spf13/hugo/hugolib"
 	"github.com/spf13/hugo/parser"
-	"os"
-	"path/filepath"
-	"strconv"
 )
 
 //  ┌┬┐┬ ┬┌─┐┌─┐┌─┐
@@ -19,28 +19,22 @@ import (
 const TOML = '+'
 const YAML = '-'
 
-type PageFileJSON struct {
-	PageFile PageFile `json:"page"`
-}
-
 // Frontmatter stores encodeable data
 type Frontmatter map[string]interface{}
 
-// Link stores region related article urls
-type Link struct {
+// Relationship stores region related article urls
+/*type Relationship struct {
 	Themen      []string `json:"themen"`
 	Exkursionen []string `json:"exkursionen"`
 	Region      []string `json:"region"`
-	Assets      string   `json:"assets"`
-}
+}*/
 
-// PageFile represents a markdown file
+// Page represents a markdown file
 type PageFile struct {
-	Path     string      `json:"path"`
-	Id       string      `json:"id"`
-	Metadata Frontmatter `json:"metadata"`
-	Content  string      `json:"content"`
-	Links    Link        `json:"links"`
+	Path          string       `json:"path"`
+	Metadata      Frontmatter  `json:"metadata"`
+	Content       string       `json:"content"`
+	Relationships Relationship `json:"relationships"`
 }
 
 func (p *PageFile) Save() error {
@@ -102,13 +96,9 @@ func (p Page) Read(fp string) (*PageFile, error) {
 		return nil, err
 	}
 
-	// strip filename from path
-	_, filename := filepath.Split(file.Name())
-
 	// assemble a new Page instance
 	return &PageFile{
 		Path:     fp,
-		Id:       filename,
 		Metadata: metadata,
 		Content:  string(parser.Content()),
 	}, nil
@@ -158,7 +148,8 @@ func (p Page) Update(fp string, fm Frontmatter, content []byte) (*PageFile, erro
 	}
 
 	// the filepath for the page
-	fp = generateFilePath(fp, title)
+	dirname := filepath.Dir(fp)
+	fp = generateFilePath(dirname, title)
 
 	// create a new page
 	page := &PageFile{
@@ -198,7 +189,10 @@ func (p Page) Delete(fp string) error {
 //  ├─┤├┤ │  ├─┘├┤ ├┬┘└─┐
 //  ┴ ┴└─┘┴─┘┴  └─┘┴└─└─┘
 
-// generateFilePath
+// generateFilePath generates a filepath based on a page title
+// if the filename already exists, add a number on the end
+// if that exists, increment the number by one until we find a filename
+// that doesn't exist
 func generateFilePath(dirname, title string) (fp string) {
 	count := 0
 
@@ -223,8 +217,7 @@ func generateFilePath(dirname, title string) (fp string) {
 		count += 1
 	}
 
-	fmt.Println(fp)
-	return dirname
+	return fp
 }
 
 func getTitle(fm Frontmatter) (string, error) {

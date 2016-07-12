@@ -9,6 +9,7 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+	"regexp"
 	"strings"
 
 	"github.com/gorilla/mux"
@@ -44,7 +45,7 @@ type updateDirResponse struct {
 // readDir reads contents of a directory
 func (h Handlers) ReadDir(w http.ResponseWriter, r *http.Request) {
 
-	var ApiPageUrl = strings.Join([]string{r.Host, "/api/page/"}, "")
+	var ApiPageUrl = strings.Join([]string{"http://", r.Host, "/api/page/"}, "")
 
 	fp, err := h.fixPathWithDir(mux.Vars(r)["path"], h.ContentDir)
 	if err != nil {
@@ -62,52 +63,17 @@ func (h Handlers) ReadDir(w http.ResponseWriter, r *http.Request) {
 
 	// trim content prefix
 	for _, item := range contents {
-		item.Path = strings.TrimPrefix(item.Path, h.ContentDir)
-		item.Link = strings.Join([]string{ApiPageUrl, item.Path}, "")
+		item.Attributes.Path = strings.TrimPrefix(item.Attributes.Path, h.ContentDir)
+		item.Links.Self = strings.Join([]string{ApiPageUrl, item.Attributes.Path}, "")
+
+		searchTerm := `(([\s\S]+?)[/]{1}([\s\S]+?)[.md])`
+		re := regexp.MustCompile(searchTerm)
+		prefix := re.FindStringSubmatch(string(item.Attributes.Path))[2]
+
+		item.Type = prefix
 	}
 
 	printJson(w, &readDirResponse{Data: contents})
-}
-
-// readDir reads contents of a directory
-func (h Handlers) ReadDirEdition(w http.ResponseWriter, r *http.Request) {
-
-	var ApiPageUrl = strings.Join([]string{r.Host, "/api/page/"}, "")
-
-	fp, err := h.fixPathWithDir(mux.Vars(r)["path"], h.ContentDir)
-	if err != nil {
-		errInvalidDir.Write(w)
-		return
-	}
-
-	// read edition to filter
-	var editionNumber string
-	editionNumber = mux.Vars(r)["edition"]
-	if err != nil {
-		errInvalidDir.Write(w)
-		return
-	}
-
-	// try and read contents of dir
-	var contents lidlib.Files
-	contents, err = h.Dir.Read(fp)
-	if err != nil {
-		errDirNotFound.Write(w)
-		return
-	}
-
-	// trim content prefix
-	for i, item := range contents {
-		if editionNumber == item.Edition {
-			item.Path = strings.TrimPrefix(item.Path, h.ContentDir)
-			item.Link = strings.Join([]string{ApiPageUrl, item.Path}, "")
-		} else {
-			contents[i] = nil
-		}
-	}
-
-	printJson(w, &readDirResponse{Data: contents})
-
 }
 
 // createDir creates a directory
@@ -139,7 +105,7 @@ func (h Handlers) CreateDir(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// trim content prefix
-	dir.Path = strings.TrimPrefix(dir.Path, h.ContentDir)
+	dir.Attributes.Path = strings.TrimPrefix(dir.Attributes.Path, h.ContentDir)
 
 	// print info
 	printJson(w, &createDirResponse{Dir: dir})
@@ -239,13 +205,7 @@ func (h Handlers) ReadPage(w http.ResponseWriter, r *http.Request) {
 	// trim content prefix from path
 	page.Path = strings.TrimPrefix(page.Path, h.ContentDir)
 
-	//
-	// Links ----------------------------------------------------------------------
-
-	// add asset path to Links
-	bandNummer := fmt.Sprintf("%d", page.Metadata["bandnummer"])
-	var ApiAssetUrl = strings.Join([]string{r.Host, "/assets/img/", bandNummer}, "")
-	page.Links.Assets = ApiAssetUrl
+	/*// Relationships ----------------------------------------------------------------------
 
 	// search for region related topics/excursions
 	// TODO: make this a function
@@ -268,7 +228,7 @@ func (h Handlers) ReadPage(w http.ResponseWriter, r *http.Request) {
 		for _, item := range themenContents {
 
 			if item.Edition == bandNummer {
-				page.Links.Themen = append(page.Links.Themen, strings.Join([]string{ApiPageUrl, strings.TrimPrefix(item.Path, h.ContentDir)}, ""))
+				page.Relationships.Themen = append(page.Relationships.Themen, strings.Join([]string{ApiPageUrl, strings.TrimPrefix(item.Path, h.ContentDir)}, ""))
 			}
 		}
 
@@ -283,7 +243,7 @@ func (h Handlers) ReadPage(w http.ResponseWriter, r *http.Request) {
 		// append related contents to ressource
 		for _, item := range exkursionenContents {
 			if item.Edition == bandNummer {
-				page.Links.Exkursionen = append(page.Links.Exkursionen, strings.Join([]string{ApiPageUrl, strings.TrimPrefix(item.Path, h.ContentDir)}, ""))
+				page.Relationships.Exkursionen = append(page.Relationships.Exkursionen, strings.Join([]string{ApiPageUrl, strings.TrimPrefix(item.Path, h.ContentDir)}, ""))
 			}
 		}
 
@@ -310,7 +270,7 @@ func (h Handlers) ReadPage(w http.ResponseWriter, r *http.Request) {
 		for _, item := range regionenContents {
 
 			if item.Edition == bandNummer {
-				page.Links.Region = append(page.Links.Region, strings.Join([]string{ApiPageUrl, strings.TrimPrefix(item.Path, h.ContentDir)}, ""))
+				page.Relationships.Region = append(page.Relationships.Region, strings.Join([]string{ApiPageUrl, strings.TrimPrefix(item.Path, h.ContentDir)}, ""))
 			}
 		}
 
@@ -337,11 +297,11 @@ func (h Handlers) ReadPage(w http.ResponseWriter, r *http.Request) {
 		for _, item := range regionenContents {
 
 			if item.Edition == bandNummer {
-				page.Links.Region = append(page.Links.Region, strings.Join([]string{ApiPageUrl, strings.TrimPrefix(item.Path, h.ContentDir)}, ""))
+				page.Relationships.Region = append(page.Relationships.Region, strings.Join([]string{ApiPageUrl, strings.TrimPrefix(item.Path, h.ContentDir)}, ""))
 			}
 		}
 
-	}
+	}*/
 
 	// print json
 	printJson(w, &readPageResponse{Page: page})
@@ -349,20 +309,31 @@ func (h Handlers) ReadPage(w http.ResponseWriter, r *http.Request) {
 
 // createPage creates a new page
 func (h Handlers) CreatePage(w http.ResponseWriter, r *http.Request) {
-
-	// parse the incoming pageFile
-	var pageFileJSON lidlib.PageFileJSON
-	err := json.NewDecoder(r.Body).Decode(&pageFileJSON)
-
 	fp, err := h.fixPathWithDir(mux.Vars(r)["path"], h.ContentDir)
 	if err != nil {
 		fmt.Fprint(w, err)
 		return
 	}
 
-	metadata := pageFileJSON.PageFile.Metadata
+	// check that parent dir exists
+	if fileExists(fp) || dirExists(fp) == false {
+		errDirNotFound.Write(w)
+		return
+	}
 
-	content := []byte(pageFileJSON.PageFile.Content)
+	metastring := r.FormValue("page[meta]")
+	if len(metastring) == 0 {
+		errNoMeta.Write(w)
+	}
+
+	metadata := lidlib.Frontmatter{}
+	err = json.Unmarshal([]byte(metastring), &metadata)
+	if err != nil {
+		errInvalidJson.Write(w)
+		return
+	}
+
+	content := []byte(r.FormValue("page[content]"))
 
 	page, err := h.Page.Create(fp, metadata, content)
 	if err != nil {
@@ -374,28 +345,35 @@ func (h Handlers) CreatePage(w http.ResponseWriter, r *http.Request) {
 	page.Path = strings.TrimPrefix(page.Path, h.ContentDir)
 
 	printJson(w, &createPageResponse{Page: page})
-
 }
 
-// !! TODO !!
-// make this working like CreatePage
 // updatePage writes page data to a file
 func (h Handlers) UpdatePage(w http.ResponseWriter, r *http.Request) {
-
-	// parse the incoming pageFile
-	var pageFileJSON lidlib.PageFileJSON
-	err := json.NewDecoder(r.Body).Decode(&pageFileJSON)
-	fmt.Println(pageFileJSON)
-
 	fp, err := h.fixPathWithDir(mux.Vars(r)["path"], h.ContentDir)
 	if err != nil {
 		fmt.Fprint(w, err)
 		return
 	}
 
-	metadata := pageFileJSON.PageFile.Metadata
+	// check that existing page exists
+	if dirExists(fp) || fileExists(fp) == false {
+		errPageNotFound.Write(w)
+		return
+	}
 
-	content := []byte(pageFileJSON.PageFile.Content)
+	metastring := r.FormValue("page[meta]")
+	if len(metastring) == 0 {
+		errNoMeta.Write(w)
+	}
+
+	metadata := lidlib.Frontmatter{}
+	err = json.Unmarshal([]byte(metastring), &metadata)
+	if err != nil {
+		fmt.Fprint(w, err)
+		return
+	}
+
+	content := []byte(r.FormValue("page[content]"))
 
 	page, err := h.Page.Update(fp, metadata, content)
 	if err != nil {

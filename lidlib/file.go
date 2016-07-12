@@ -2,44 +2,58 @@ package lidlib
 
 import (
 	"os"
-	"regexp"
-	"strings"
 )
 
-type File struct {
-	Id      string `json:"id"`
+type Region struct {
+	Self string `json:"self"`
+}
+
+type Thema struct {
+	Self string `json:"self"`
+}
+
+type Exkursion struct {
+	Self string `json:"self"`
+}
+type Link struct {
+	Self string `json:"self"`
+}
+
+type Attribute struct {
 	Name    string `json:"name"`
 	Path    string `json:"path"`
 	IsDir   bool   `json:"isDir"`
 	Size    int64  `json:"size"`
 	ModTime string `json:"modTime"`
-	Edition string `json:"edition"`
-	Link    string `json:"link"`
+}
+
+type Relationship struct {
+	Regions     Region    `json:"region"`
+	Themen      Thema     `json:"themen"`
+	Exkursionen Exkursion `json:"exkursionen"`
+}
+
+type File struct {
+	Id            string       `json:"id"`
+	Type          string       `json:"type"`
+	Links         Link         `json:"links"`
+	Attributes    Attribute    `json:"attributes"`
+	Relationships Relationship `json:"relationships"`
 }
 
 type Files []*File
 
 // NewFile constructs a new File based on a path and file info
 func NewFile(path string, info os.FileInfo) *File {
-	file := &File{Path: path}
+	file := new(File)
+	file.Attributes.Path = path
 	file.Load(info)
 	return file
 }
 func (f *File) Load(info os.FileInfo) {
-
-	searchTerm := `(([\s\S]+?)[-]{1})`
-	re := regexp.MustCompile(searchTerm)
-	prefix := re.FindStringSubmatch(string(info.Name()))[1]
-
 	f.Id = info.Name()
-	f.IsDir = info.IsDir()
-	f.Size = info.Size()
-	f.ModTime = info.ModTime().Format("02/01/2006")
-	f.Edition = strings.Split(strings.Split(info.Name(), "-")[0], "_")[0]
-	_nameTrimSuffix := strings.TrimSuffix(info.Name(), ".md")
-	_nameTrimPrefix := strings.TrimPrefix(_nameTrimSuffix, prefix)
-	_nameTrimDash := strings.Replace(_nameTrimPrefix, "-", " ", -1)
-	_nameToTitle := strings.ToTitle(_nameTrimDash)
-	f.Name = _nameToTitle
-
+	f.Attributes.Name = info.Name()
+	f.Attributes.IsDir = info.IsDir()
+	f.Attributes.Size = info.Size()
+	f.Attributes.ModTime = info.ModTime().Format("02/01/2006")
 }
