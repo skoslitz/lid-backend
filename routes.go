@@ -40,6 +40,12 @@ func GetRoutes(h *Handlers) Routes {
 			"/dir/{path:.*}",
 			h.DeleteDir,
 		},
+		Route{
+			"ReadRegionRelationships",
+			"GET",
+			"/regionen/{id}/{type}",
+			h.ReadRegionRelationships,
+		},
 
 		// pages
 		Route{

@@ -2,21 +2,24 @@ package lidlib
 
 import (
 	"os"
+	"strings"
 )
 
+type Link struct {
+	Self    string `json:"self,omitempty"`
+	Related string `json:"related,omitempty"`
+}
+
 type Region struct {
-	Self string `json:"self"`
+	Link `json:"links"`
 }
 
 type Thema struct {
-	Self string `json:"self"`
+	Link `json:"links"`
 }
 
 type Exkursion struct {
-	Self string `json:"self"`
-}
-type Link struct {
-	Self string `json:"self"`
+	Link `json:"links"`
 }
 
 type Attribute struct {
@@ -28,32 +31,45 @@ type Attribute struct {
 }
 
 type Relationship struct {
-	Regions     Region    `json:"region"`
-	Themen      Thema     `json:"themen"`
-	Exkursionen Exkursion `json:"exkursionen"`
+	Region    `json:"region"`
+	Thema     `json:"themen"`
+	Exkursion `json:"exkursionen"`
 }
 
 type File struct {
-	Id            string       `json:"id"`
-	Type          string       `json:"type"`
-	Links         Link         `json:"links"`
-	Attributes    Attribute    `json:"attributes"`
-	Relationships Relationship `json:"relationships"`
+	Id           string `json:"id"`
+	Type         string `json:"type"`
+	Link         `json:"links"`
+	Attribute    `json:"attributes"`
+	Relationship `json:"relationships"`
 }
 
 type Files []*File
 
+func (f *File) SetRelationship(ApiPageUrl string) {
+	switch f.Type {
+	case "regionen":
+		f.Thema.Related = strings.Join([]string{ApiPageUrl, f.Path, "/themen"}, "")
+		f.Exkursion.Related = strings.Join([]string{ApiPageUrl, f.Path, "/exkursionen"}, "")
+	case "themen":
+		f.Region.Related = strings.Join([]string{ApiPageUrl, f.Path, "/region"}, "")
+	case "exkursionen":
+		f.Region.Related = strings.Join([]string{ApiPageUrl, f.Path, "/region"}, "")
+	}
+
+}
+
 // NewFile constructs a new File based on a path and file info
 func NewFile(path string, info os.FileInfo) *File {
 	file := new(File)
-	file.Attributes.Path = path
+	file.Path = path
 	file.Load(info)
 	return file
 }
 func (f *File) Load(info os.FileInfo) {
 	f.Id = info.Name()
-	f.Attributes.Name = info.Name()
-	f.Attributes.IsDir = info.IsDir()
-	f.Attributes.Size = info.Size()
-	f.Attributes.ModTime = info.ModTime().Format("02/01/2006")
+	f.Name = info.Name()
+	f.IsDir = info.IsDir()
+	f.Size = info.Size()
+	f.ModTime = info.ModTime().Format("02/01/2006")
 }

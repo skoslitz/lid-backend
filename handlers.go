@@ -63,17 +63,25 @@ func (h Handlers) ReadDir(w http.ResponseWriter, r *http.Request) {
 
 	// trim content prefix
 	for _, item := range contents {
-		item.Attributes.Path = strings.TrimPrefix(item.Attributes.Path, h.ContentDir)
-		item.Links.Self = strings.Join([]string{ApiPageUrl, item.Attributes.Path}, "")
+		item.Path = strings.TrimPrefix(item.Path, h.ContentDir)
+		item.Self = strings.Join([]string{ApiPageUrl, item.Path}, "")
 
 		searchTerm := `(([\s\S]+?)[/]{1}([\s\S]+?)[.md])`
 		re := regexp.MustCompile(searchTerm)
-		prefix := re.FindStringSubmatch(string(item.Attributes.Path))[2]
+		item.Type = re.FindStringSubmatch(string(item.Path))[2]
+		item.SetRelationship(ApiPageUrl)
 
-		item.Type = prefix
 	}
 
 	printJson(w, &readDirResponse{Data: contents})
+}
+
+// readDir reads contents of a directory
+func (h Handlers) ReadRegionRelationships(w http.ResponseWriter, r *http.Request) {
+	cid := mux.Vars(r)["id"]
+	ctype := mux.Vars(r)["type"]
+	log := map[string]string{"id": cid, "type": ctype}
+	printJson(w, log)
 }
 
 // createDir creates a directory
@@ -105,7 +113,7 @@ func (h Handlers) CreateDir(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// trim content prefix
-	dir.Attributes.Path = strings.TrimPrefix(dir.Attributes.Path, h.ContentDir)
+	dir.Path = strings.TrimPrefix(dir.Path, h.ContentDir)
 
 	// print info
 	printJson(w, &createDirResponse{Dir: dir})
