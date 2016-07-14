@@ -23,11 +23,13 @@ type Exkursion struct {
 }
 
 type Attribute struct {
-	Name    string `json:"name"`
-	Path    string `json:"path"`
-	IsDir   bool   `json:"isDir"`
-	Size    int64  `json:"size"`
-	ModTime string `json:"modTime"`
+	Name     string      `json:"name"`
+	Path     string      `json:"path"`
+	IsDir    bool        `json:"isDir"`
+	Size     int64       `json:"size"`
+	ModTime  string      `json:"modTime"`
+	Metadata Frontmatter `json:"metadata,omitempty"`
+	Content  string      `json:"content,omitempty"`
 }
 
 type Relationship struct {

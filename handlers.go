@@ -31,15 +31,15 @@ type Handlers struct {
 */
 
 type readDirResponse struct {
-	Data lidlib.Files `json:"data"`
+	Dir lidlib.Files `json:"data"`
 }
 
 type createDirResponse struct {
-	Dir *lidlib.File `json:"dir"`
+	Dir *lidlib.File `json:"data"`
 }
 
 type updateDirResponse struct {
-	Dir *lidlib.File `json:"dir"`
+	Dir *lidlib.File `json:"data"`
 }
 
 // readDir reads contents of a directory
@@ -73,7 +73,7 @@ func (h Handlers) ReadDir(w http.ResponseWriter, r *http.Request) {
 
 	}
 
-	printJson(w, &readDirResponse{Data: contents})
+	printJson(w, &readDirResponse{Dir: contents})
 }
 
 // readDir reads contents of a directory
@@ -184,19 +184,21 @@ func (h Handlers) DeleteDir(w http.ResponseWriter, r *http.Request) {
 */
 
 type readPageResponse struct {
-	Page *lidlib.PageFile `json:"page"`
+	Page *lidlib.PageFile `json:"data"`
 }
 
 type createPageResponse struct {
-	Page *lidlib.PageFile `json:"page"`
+	Page *lidlib.PageFile `json:"data"`
 }
 
 type updatePageResponse struct {
-	Page *lidlib.PageFile `json:"page"`
+	Page *lidlib.PageFile `json:"data"`
 }
 
 // readPage reads page data
 func (h Handlers) ReadPage(w http.ResponseWriter, r *http.Request) {
+	var ApiPageUrl = strings.Join([]string{"http://", r.Host, "/api/page/"}, "")
+
 	fp, err := h.fixPathWithDir(mux.Vars(r)["path"], h.ContentDir)
 	if err != nil {
 		errInvalidDir.Write(w)
@@ -212,6 +214,11 @@ func (h Handlers) ReadPage(w http.ResponseWriter, r *http.Request) {
 
 	// trim content prefix from path
 	page.Path = strings.TrimPrefix(page.Path, h.ContentDir)
+	page.Self = strings.Join([]string{ApiPageUrl, page.Path}, "")
+
+	searchTerm := `(([\s\S]+?)[/]{1}([\s\S]+?)[.md])`
+	re := regexp.MustCompile(searchTerm)
+	page.Type = re.FindStringSubmatch(string(page.Path))[2]
 
 	/*// Relationships ----------------------------------------------------------------------
 

@@ -22,19 +22,13 @@ const YAML = '-'
 // Frontmatter stores encodeable data
 type Frontmatter map[string]interface{}
 
-// Relationship stores region related article urls
-/*type Relationship struct {
-	Themen      []string `json:"themen"`
-	Exkursionen []string `json:"exkursionen"`
-	Region      []string `json:"region"`
-}*/
-
 // Page represents a markdown file
 type PageFile struct {
-	Path          string       `json:"path"`
-	Metadata      Frontmatter  `json:"metadata"`
-	Content       string       `json:"content"`
-	Relationships Relationship `json:"relationships"`
+	Id           string `json:"id"`
+	Type         string `json:"type"`
+	Link         `json:"links"`
+	Attribute    `json:"attributes"`
+	Relationship `json:"relationships"`
 }
 
 func (p *PageFile) Save() error {
@@ -96,12 +90,12 @@ func (p Page) Read(fp string) (*PageFile, error) {
 		return nil, err
 	}
 
-	// assemble a new Page instance
-	return &PageFile{
-		Path:     fp,
-		Metadata: metadata,
-		Content:  string(parser.Content()),
-	}, nil
+	// create and assemble a new Page instance
+	pagefile := new(PageFile)
+	pagefile.assemblePageInstance(fp, metadata, parser.Content())
+
+	return pagefile, nil
+
 }
 
 // CreatePage creates a new file and saves page content to it
@@ -116,20 +110,17 @@ func (p Page) Create(dirname string, fm Frontmatter, content []byte) (*PageFile,
 	// the filepath for the page
 	fp := generateFilePath(dirname, title)
 
-	// create a new page
-	page := &PageFile{
-		Path:     fp,
-		Metadata: fm,
-		Content:  string(content),
-	}
+	// create and assemble a new Page instance
+	pagefile := new(PageFile)
+	pagefile.assemblePageInstance(fp, fm, content)
 
 	// save page to disk
-	err = page.Save()
+	err = pagefile.Save()
 	if err != nil {
 		return nil, err
 	}
 
-	return page, nil
+	return pagefile, nil
 }
 
 // UpdatePage changes the content of an existing page
@@ -151,20 +142,17 @@ func (p Page) Update(fp string, fm Frontmatter, content []byte) (*PageFile, erro
 	dirname := filepath.Dir(fp)
 	fp = generateFilePath(dirname, title)
 
-	// create a new page
-	page := &PageFile{
-		Path:     fp,
-		Metadata: fm,
-		Content:  string(content),
-	}
+	// create and assemble a new Page instance
+	pagefile := new(PageFile)
+	pagefile.assemblePageInstance(fp, fm, content)
 
 	// save page to disk
-	err = page.Save()
+	err = pagefile.Save()
 	if err != nil {
 		return nil, err
 	}
 
-	return page, nil
+	return pagefile, nil
 }
 
 // Delete deletes a page
@@ -185,9 +173,19 @@ func (p Page) Delete(fp string) error {
 	return os.Remove(fp)
 }
 
-//  ┬ ┬┌─┐┬  ┌─┐┌─┐┬─┐┌─┐
-//  ├─┤├┤ │  ├─┘├┤ ├┬┘└─┐
-//  ┴ ┴└─┘┴─┘┴  └─┘┴└─└─┘
+// helper methods
+
+func (pagefile *PageFile) assemblePageInstance(fp string, fm Frontmatter, content []byte) {
+	pagefile.Id = filepath.Base(fp)
+	pagefile.Path = fp
+	pagefile.Metadata = fm
+	pagefile.Content = string(content)
+
+	fileStat, _ := os.Stat(fp)
+	pagefile.ModTime = fileStat.ModTime().Format("02/01/2006")
+	pagefile.Size = fileStat.Size()
+
+}
 
 // generateFilePath generates a filepath based on a page title
 // if the filename already exists, add a number on the end
