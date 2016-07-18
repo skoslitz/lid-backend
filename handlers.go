@@ -46,6 +46,7 @@ type updateDirResponse struct {
 func (h Handlers) ReadDir(w http.ResponseWriter, r *http.Request) {
 
 	var ApiPageUrl = strings.Join([]string{"http://", r.Host, "/api/page/"}, "")
+	var ApiUrl = strings.Join([]string{"http://", r.Host, "/api/"}, "")
 
 	fp, err := h.fixPathWithDir(mux.Vars(r)["path"], h.ContentDir)
 	if err != nil {
@@ -69,19 +70,50 @@ func (h Handlers) ReadDir(w http.ResponseWriter, r *http.Request) {
 		searchTerm := `(([\s\S]+?)[/]{1}([\s\S]+?)[.md])`
 		re := regexp.MustCompile(searchTerm)
 		item.Type = re.FindStringSubmatch(string(item.Path))[2]
-		item.SetRelationship(ApiPageUrl)
+		item.SetRelationship(ApiUrl)
 
 	}
 
 	printJson(w, &readDirResponse{Dir: contents})
 }
 
-// readDir reads contents of a directory
+// reads content of a directory and filters by region
 func (h Handlers) ReadRegionRelationships(w http.ResponseWriter, r *http.Request) {
-	cid := mux.Vars(r)["id"]
+
 	ctype := mux.Vars(r)["type"]
-	log := map[string]string{"id": cid, "type": ctype}
-	printJson(w, log)
+	if containsContentType(ctype) {
+		cid := strings.Split(mux.Vars(r)["id"], "-")[0]
+		var cTypePath = strings.Join([]string{h.ContentDir, ctype}, "")
+		var ApiPageUrl = strings.Join([]string{"http://", r.Host, "/api/page/"}, "")
+
+		// try and read contents of dir
+		var contents lidlib.Files
+		contents, err := h.Dir.Read(cTypePath)
+		if err != nil {
+			errDirNotFound.Write(w)
+			return
+		}
+
+		var filteredContent lidlib.Files
+		// trim content prefix
+		for _, item := range contents {
+			var cRegionId = strings.Split(item.Id, "_")[0]
+			if cRegionId == cid {
+				item.Path = strings.TrimPrefix(item.Path, h.ContentDir)
+				item.Self = strings.Join([]string{ApiPageUrl, item.Path}, "")
+				searchTerm := `(([\s\S]+?)[/]{1}([\s\S]+?)[.md])`
+				re := regexp.MustCompile(searchTerm)
+				item.Type = re.FindStringSubmatch(string(item.Path))[2]
+				filteredContent = append(filteredContent, item)
+			}
+
+		}
+		printJson(w, &readDirResponse{Dir: filteredContent})
+	} else {
+		errInvalidDir.Write(w)
+		return
+	}
+
 }
 
 // createDir creates a directory

@@ -6,6 +6,16 @@ import (
 	"os"
 )
 
+func containsContentType(t string) bool {
+	ctypes := [...]string{"themen", "exkursionen"}
+	for _, v := range ctypes {
+		if v == t {
+			return true
+		}
+	}
+	return false
+}
+
 func fileExists(fp string) bool {
 	info, err := os.Stat(fp)
 	if err != nil {
