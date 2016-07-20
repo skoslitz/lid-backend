@@ -50,6 +50,22 @@ type File struct {
 
 type Files []*File
 
+// NewFile constructs a new File based on a path and file info
+func NewFile(path string, info os.FileInfo) *File {
+	file := new(File)
+	file.Path = path
+	file.Load(info)
+	return file
+}
+
+func (f *File) Load(info os.FileInfo) {
+	f.Id = info.Name()
+	f.Name = info.Name()
+	f.IsDir = info.IsDir()
+	f.Size = info.Size()
+	f.ModTime = info.ModTime().Format("02/01/2006")
+}
+
 func (f *File) SetRelationship(ApiUrl string) {
 	switch f.Type {
 	case "regionen":
@@ -88,19 +104,4 @@ func (f *File) SetRelationship(ApiUrl string) {
 		}
 	}
 
-}
-
-// NewFile constructs a new File based on a path and file info
-func NewFile(path string, info os.FileInfo) *File {
-	file := new(File)
-	file.Path = path
-	file.Load(info)
-	return file
-}
-func (f *File) Load(info os.FileInfo) {
-	f.Id = info.Name()
-	f.Name = info.Name()
-	f.IsDir = info.IsDir()
-	f.Size = info.Size()
-	f.ModTime = info.ModTime().Format("02/01/2006")
 }

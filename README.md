@@ -14,7 +14,7 @@
 
 #### Directories (Items in your repo `/content` folder)
 - Read Dir: GET /dir/{dirname}/
-- Read Dir | Edition Filter: GET /dir/{dirname}/{editionNumber}
+- Read Region related content Filter: GET /regionen/{filename.md}/[themen exkursionen]
 - Create Dir: POST /dir/{dirname}
 - Update Dir: PUT /dir/{dirname}
 - Delete Dir: DELETE /dir/{dirname}

@@ -5,16 +5,14 @@ import (
 	"os"
 	"path/filepath"
 	"strconv"
+	"strings"
 
 	"github.com/kennygrant/sanitize"
 	"github.com/spf13/cast"
 	"github.com/spf13/hugo/hugolib"
 	"github.com/spf13/hugo/parser"
+	"github.com/spf13/viper"
 )
-
-//  ┌┬┐┬ ┬┌─┐┌─┐┌─┐
-//   │ └┬┘├─┘├┤ └─┐
-//   ┴  ┴ ┴  └─┘└─┘
 
 const TOML = '+'
 const YAML = '-'
@@ -30,25 +28,6 @@ type PageFile struct {
 	Attribute    `json:"attributes"`
 	Relationship `json:"relationships"`
 }
-
-func (p *PageFile) Save() error {
-	// create new hugo page
-	page, err := hugolib.NewPage(p.Path)
-	if err != nil {
-		return err
-	}
-
-	// set attributes
-	page.SetSourceMetaData(p.Metadata, TOML)
-	page.SetSourceContent([]byte(p.Content))
-
-	// save page
-	return page.SafeSaveSourceAs(p.Path)
-}
-
-//  ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌┌─┐
-//  ├┤ │ │││││   │ ││ ││││└─┐
-//  └  └─┘┘└┘└─┘ ┴ ┴└─┘┘└┘└─┘
 
 type PageManager interface {
 	Read(fp string) (*PageFile, error)
@@ -173,18 +152,69 @@ func (p Page) Delete(fp string) error {
 	return os.Remove(fp)
 }
 
-// helper methods
+func (p *PageFile) Save() error {
+	// create new hugo page
+	page, err := hugolib.NewPage(p.Path)
+	if err != nil {
+		return err
+	}
 
-func (pagefile *PageFile) assemblePageInstance(fp string, fm Frontmatter, content []byte) {
-	pagefile.Id = filepath.Base(fp)
-	pagefile.Path = fp
-	pagefile.Metadata = fm
-	pagefile.Content = string(content)
+	// set attributes
+	page.SetSourceMetaData(p.Metadata, TOML)
+	page.SetSourceContent([]byte(p.Content))
+
+	// save page
+	return page.SafeSaveSourceAs(p.Path)
+}
+
+func (p *PageFile) SetRelationship(ApiUrl string) {
+	switch p.Type {
+	case "regionen":
+		p.Thema.Related = strings.Join([]string{ApiUrl, p.Path, "/themen"}, "")
+		p.Exkursion.Related = strings.Join([]string{ApiUrl, p.Path, "/exkursionen"}, "")
+		p.Region.Related = strings.Join([]string{ApiUrl, "dir", "/regionen"}, "")
+	case "themen":
+		var cRegionId = strings.Split(p.Id, "_")[0]
+		regionContentDir := strings.Join([]string{viper.GetString("ContentDir"), "regionen"}, "")
+
+		// read contents of regionContentDir
+		var contents Files
+		var rc = new(Dir)
+		contents, _ = rc.Read(regionContentDir)
+
+		for _, item := range contents {
+			var cid = strings.Split(item.Id, "-")[0]
+			if cRegionId == cid {
+				p.Region.Related = strings.Join([]string{ApiUrl, "page/", strings.TrimPrefix(item.Path, viper.GetString("ContentDir"))}, "")
+			}
+		}
+	case "exkursionen":
+		var cRegionId = strings.Split(p.Id, "_")[0]
+		regionContentDir := strings.Join([]string{viper.GetString("ContentDir"), "regionen"}, "")
+
+		// read contents of regionContentDir
+		var contents Files
+		var rc = new(Dir)
+		contents, _ = rc.Read(regionContentDir)
+
+		for _, item := range contents {
+			var cid = strings.Split(item.Id, "-")[0]
+			if cRegionId == cid {
+				p.Region.Related = strings.Join([]string{ApiUrl, "page/", strings.TrimPrefix(item.Path, viper.GetString("ContentDir"))}, "")
+			}
+		}
+	}
+}
+
+func (p *PageFile) assemblePageInstance(fp string, fm Frontmatter, content []byte) {
+	p.Id = filepath.Base(fp)
+	p.Path = fp
+	p.Metadata = fm
+	p.Content = string(content)
 
 	fileStat, _ := os.Stat(fp)
-	pagefile.ModTime = fileStat.ModTime().Format("02/01/2006")
-	pagefile.Size = fileStat.Size()
-
+	p.ModTime = fileStat.ModTime().Format("02/01/2006")
+	p.Size = fileStat.Size()
 }
 
 // generateFilePath generates a filepath based on a page title
