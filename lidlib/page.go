@@ -2,6 +2,7 @@ package lidlib
 
 import (
 	"errors"
+	"fmt"
 	"os"
 	"path/filepath"
 	"strconv"
@@ -16,6 +17,10 @@ import (
 
 const TOML = '+'
 const YAML = '-'
+
+type PageFileJSON struct {
+	PageFile `json:"page"`
+}
 
 // Frontmatter stores encodeable data
 type Frontmatter map[string]interface{}
@@ -245,7 +250,9 @@ func generateFilePath(dirname, title string) (fp string) {
 		count += 1
 	}
 
-	return fp
+	//return fp
+	fmt.Println(fp)
+	return dirname
 }
 
 func getTitle(fm Frontmatter) (string, error) {

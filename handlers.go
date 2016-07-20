@@ -262,31 +262,21 @@ func (h Handlers) ReadPage(w http.ResponseWriter, r *http.Request) {
 
 // createPage creates a new page
 func (h Handlers) CreatePage(w http.ResponseWriter, r *http.Request) {
+	// parse the incoming pageFile
+	var pageFileJSON lidlib.PageFileJSON
+	err := json.NewDecoder(r.Body).Decode(&pageFileJSON)
+
 	fp, err := h.fixPathWithDir(mux.Vars(r)["path"], h.ContentDir)
 	if err != nil {
 		fmt.Fprint(w, err)
 		return
 	}
 
-	// check that parent dir exists
-	if fileExists(fp) || dirExists(fp) == false {
-		errDirNotFound.Write(w)
-		return
-	}
+	fmt.Println(pageFileJSON)
 
-	metastring := r.FormValue("page[meta]")
-	if len(metastring) == 0 {
-		errNoMeta.Write(w)
-	}
+	metadata := pageFileJSON.PageFile.Metadata
 
-	metadata := lidlib.Frontmatter{}
-	err = json.Unmarshal([]byte(metastring), &metadata)
-	if err != nil {
-		errInvalidJson.Write(w)
-		return
-	}
-
-	content := []byte(r.FormValue("page[content]"))
+	content := []byte(pageFileJSON.PageFile.Content)
 
 	page, err := h.Page.Create(fp, metadata, content)
 	if err != nil {
