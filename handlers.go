@@ -272,8 +272,6 @@ func (h Handlers) CreatePage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Println(pageFileJSON)
-
 	metadata := pageFileJSON.PageFile.Metadata
 
 	content := []byte(pageFileJSON.PageFile.Content)
@@ -292,6 +290,10 @@ func (h Handlers) CreatePage(w http.ResponseWriter, r *http.Request) {
 
 // updatePage writes page data to a file
 func (h Handlers) UpdatePage(w http.ResponseWriter, r *http.Request) {
+	// parse the incoming pageFile
+	var pageFileJSON lidlib.PageFileJSON
+	err := json.NewDecoder(r.Body).Decode(&pageFileJSON)
+
 	fp, err := h.fixPathWithDir(mux.Vars(r)["path"], h.ContentDir)
 	if err != nil {
 		fmt.Fprint(w, err)
@@ -304,19 +306,9 @@ func (h Handlers) UpdatePage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	metastring := r.FormValue("page[meta]")
-	if len(metastring) == 0 {
-		errNoMeta.Write(w)
-	}
+	metadata := pageFileJSON.PageFile.Metadata
 
-	metadata := lidlib.Frontmatter{}
-	err = json.Unmarshal([]byte(metastring), &metadata)
-	if err != nil {
-		fmt.Fprint(w, err)
-		return
-	}
-
-	content := []byte(r.FormValue("page[content]"))
+	content := []byte(pageFileJSON.PageFile.Content)
 
 	page, err := h.Page.Update(fp, metadata, content)
 	if err != nil {
@@ -477,8 +469,6 @@ func (h Handlers) fixPathWithDir(p string, dir string) (string, error) {
 
 	// join path with content folder
 	fp := path.Join(dir, p)
-
-	fmt.Println(fp)
 
 	// check that path still starts with content dir
 	if !strings.HasPrefix(fp, dir) {

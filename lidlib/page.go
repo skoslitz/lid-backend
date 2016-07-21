@@ -2,13 +2,10 @@ package lidlib
 
 import (
 	"errors"
-	"fmt"
 	"os"
 	"path/filepath"
-	"strconv"
 	"strings"
 
-	"github.com/kennygrant/sanitize"
 	"github.com/spf13/cast"
 	"github.com/spf13/hugo/hugolib"
 	"github.com/spf13/hugo/parser"
@@ -53,35 +50,50 @@ func (p Page) Read(fp string) (*PageFile, error) {
 		return nil, err
 	}
 
+	// retrieve file infos
+	fileStat, err := os.Stat(fp)
+	if err != nil {
+		return nil, err
+	}
+
 	// create and assemble a new Page instance
-	pagefile := new(PageFile)
-	pagefile.assemblePageInstance(fp, metadata, parser.Content())
+	pagefile := &PageFile{
+		Id: filepath.Base(fp),
+		Attribute: Attribute{
+			Path:     fp,
+			Size:     fileStat.Size(),
+			ModTime:  fileStat.ModTime().Format("02/01/2006"),
+			Metadata: metadata,
+			Content:  string(parser.Content()),
+		},
+	}
 
 	return pagefile, nil
 
 }
 
 // CreatePage creates a new file and saves page content to it
-func (p Page) Create(dirname string, fm Frontmatter, content []byte) (*PageFile, error) {
-
-	// get title from metadata
-	title, err := getTitle(fm)
-	if err != nil {
-		return nil, err
-	}
-
-	// the filepath for the page
-	fp := generateFilePath(dirname, title)
+func (p Page) Create(fp string, fm Frontmatter, content []byte) (*PageFile, error) {
 
 	// create and assemble a new Page instance
-	pagefile := new(PageFile)
-	pagefile.assemblePageInstance(fp, fm, content)
+	pagefile := &PageFile{
+		Id: filepath.Base(fp),
+		Attribute: Attribute{
+			Path:     fp,
+			Metadata: fm,
+			Content:  string(content),
+		},
+	}
 
 	// save page to disk
-	err = pagefile.Save()
+	err := pagefile.Save()
 	if err != nil {
 		return nil, err
 	}
+
+	// NOTE
+	// pagefile os.Stat() is not performed
+	// -> size and modTime are not set
 
 	return pagefile, nil
 }
@@ -89,25 +101,21 @@ func (p Page) Create(dirname string, fm Frontmatter, content []byte) (*PageFile,
 // UpdatePage changes the content of an existing page
 func (p Page) Update(fp string, fm Frontmatter, content []byte) (*PageFile, error) {
 
-	// get title from metadata
-	title, err := getTitle(fm)
-	if err != nil {
-		return nil, err
-	}
-
 	// delete existing page
-	err = p.Delete(fp)
+	err := p.Delete(fp)
 	if err != nil {
 		return nil, err
 	}
-
-	// the filepath for the page
-	dirname := filepath.Dir(fp)
-	fp = generateFilePath(dirname, title)
 
 	// create and assemble a new Page instance
-	pagefile := new(PageFile)
-	pagefile.assemblePageInstance(fp, fm, content)
+	pagefile := &PageFile{
+		Id: filepath.Base(fp),
+		Attribute: Attribute{
+			Path:     fp,
+			Metadata: fm,
+			Content:  string(content),
+		},
+	}
 
 	// save page to disk
 	err = pagefile.Save()
@@ -136,6 +144,7 @@ func (p Page) Delete(fp string) error {
 	return os.Remove(fp)
 }
 
+// Saves a page
 func (p *PageFile) Save() error {
 	// create new hugo page
 	page, err := hugolib.NewPage(p.Path)
@@ -151,6 +160,7 @@ func (p *PageFile) Save() error {
 	return page.SafeSaveSourceAs(p.Path)
 }
 
+// Sets relationship links per type and id
 func (p *PageFile) SetRelationship(ApiUrl string) {
 	switch p.Type {
 	case "regionen":
@@ -188,65 +198,4 @@ func (p *PageFile) SetRelationship(ApiUrl string) {
 			}
 		}
 	}
-}
-
-func (p *PageFile) assemblePageInstance(fp string, fm Frontmatter, content []byte) {
-	p.Id = filepath.Base(fp)
-	p.Path = fp
-	p.Metadata = fm
-	p.Content = string(content)
-
-	fileStat, _ := os.Stat(fp)
-	p.ModTime = fileStat.ModTime().Format("02/01/2006")
-	p.Size = fileStat.Size()
-}
-
-// generateFilePath generates a filepath based on a page title
-// if the filename already exists, add a number on the end
-// if that exists, increment the number by one until we find a filename
-// that doesn't exist
-func generateFilePath(dirname, title string) (fp string) {
-	count := 0
-
-	for {
-
-		// combine title with count
-		name := title
-		if count != 0 {
-			name += " " + strconv.Itoa(count)
-		}
-
-		// join filename with dirname
-		filename := sanitize.Path(name + ".md")
-		fp = filepath.Join(dirname, filename)
-
-		// only stop looping when file doesn't already exist
-		if _, err := os.Stat(fp); err != nil {
-			break
-		}
-
-		// try again with a different number
-		count += 1
-	}
-
-	//return fp
-	fmt.Println(fp)
-	return dirname
-}
-
-func getTitle(fm Frontmatter) (string, error) {
-
-	// check that title has been specified
-	t, ok := fm["title"]
-	if ok == false {
-		return "", errors.New("page[meta].title must be specified")
-	}
-
-	// check that title is a string
-	title, ok := t.(string)
-	if ok == false {
-		return "", errors.New("page[meta].title must be a string")
-	}
-
-	return title, nil
 }

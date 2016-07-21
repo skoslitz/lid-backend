@@ -29,6 +29,11 @@ Example*: `PUT dir/themen --form dir[name]="themen-neu"`
 
 Example*: `PUT page/themen/77_B_000.md --form page[meta]={\"title\": \"Beitragstitel\"} page[content]="text string"`
 
+Example (REST client usage):
+POST `page/themen/79_B_100-titel.md`
+Raw payload: 
+`{ "page": { "id": "77_B_100-titel.md", "type": "themen", "links": {}, "attributes": {"metadata": {"title": "79_B_100-titel"}} }}`
+
 #### Config
 - Read Config: GET /config
 - Update Config: PUT /config
