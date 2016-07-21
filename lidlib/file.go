@@ -7,49 +7,6 @@ import (
 	"github.com/spf13/viper"
 )
 
-type Link struct {
-	Self    string `json:"self,omitempty"`
-	Related string `json:"related,omitempty"`
-}
-
-type Region struct {
-	Link `json:"links"`
-}
-
-type Thema struct {
-	Link `json:"links"`
-}
-
-type Exkursion struct {
-	Link `json:"links"`
-}
-
-type Attribute struct {
-	Name     string      `json:"name"`
-	Path     string      `json:"path"`
-	IsDir    bool        `json:"isDir"`
-	Size     int64       `json:"size"`
-	ModTime  string      `json:"modTime"`
-	Metadata Frontmatter `json:"metadata,omitempty"`
-	Content  string      `json:"content,omitempty"`
-}
-
-type Relationship struct {
-	Region    `json:"region"`
-	Thema     `json:"themen"`
-	Exkursion `json:"exkursionen"`
-}
-
-type File struct {
-	Id           string `json:"id"`
-	Type         string `json:"type"`
-	Link         `json:"links"`
-	Attribute    `json:"attributes"`
-	Relationship `json:"relationships"`
-}
-
-type Files []*File
-
 // NewFile constructs a new File based on a path and file info
 func NewFile(path string, info os.FileInfo) *File {
 	file := new(File)

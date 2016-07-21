@@ -15,33 +15,12 @@ import (
 	"github.com/spf13/viper"
 )
 
-const TOML = '+'
-const YAML = '-'
-
-type PageFileJSON struct {
-	PageFile `json:"page"`
-}
-
-// Frontmatter stores encodeable data
-type Frontmatter map[string]interface{}
-
-// Page represents a markdown file
-type PageFile struct {
-	Id           string `json:"id"`
-	Type         string `json:"type"`
-	Link         `json:"links"`
-	Attribute    `json:"attributes"`
-	Relationship `json:"relationships"`
-}
-
 type PageManager interface {
 	Read(fp string) (*PageFile, error)
 	Create(fp string, fm Frontmatter, content []byte) (*PageFile, error)
 	Update(fp string, fm Frontmatter, content []byte) (*PageFile, error)
 	Delete(fp string) error
 }
-
-type Page struct{}
 
 func NewPage() *Page {
 	return &Page{}
