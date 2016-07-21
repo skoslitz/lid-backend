@@ -30,7 +30,7 @@ func GetRoutes(h *Handlers) Routes {
 		},
 		Route{
 			"UpdateDir",
-			"PUT",
+			"OPTIONS",
 			"/dir/{path:.*}",
 			h.UpdateDir,
 		},
@@ -82,7 +82,7 @@ func GetRoutes(h *Handlers) Routes {
 		},
 		Route{
 			"UpdateConfig",
-			"PUT",
+			"OPTIONS",
 			"/config",
 			h.UpdateConfig,
 		},
