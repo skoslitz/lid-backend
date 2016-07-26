@@ -60,6 +60,7 @@ func (p Page) Read(fp string) (*PageFile, error) {
 	pagefile := &PageFile{
 		Id: filepath.Base(fp),
 		Attribute: Attribute{
+			Name:     filepath.Base(fp),
 			Path:     fp,
 			Size:     fileStat.Size(),
 			ModTime:  fileStat.ModTime().Format("02/01/2006"),
@@ -163,11 +164,11 @@ func (p *PageFile) Save() error {
 // Sets relationship links per type and id
 func (p *PageFile) SetRelationship(ApiUrl string) {
 	switch p.Type {
-	case "regionen":
+	case "region":
 		p.Thema.Related = strings.Join([]string{ApiUrl, p.Path, "/themen"}, "")
 		p.Exkursion.Related = strings.Join([]string{ApiUrl, p.Path, "/exkursionen"}, "")
 		p.Region.Related = strings.Join([]string{ApiUrl, "dir", "/regionen"}, "")
-	case "themen":
+	case "topic":
 		var cRegionId = strings.Split(p.Id, "_")[0]
 		regionContentDir := strings.Join([]string{viper.GetString("ContentDir"), "regionen"}, "")
 
@@ -182,7 +183,7 @@ func (p *PageFile) SetRelationship(ApiUrl string) {
 				p.Region.Related = strings.Join([]string{ApiUrl, "page/", strings.TrimPrefix(item.Path, viper.GetString("ContentDir"))}, "")
 			}
 		}
-	case "exkursionen":
+	case "excursion":
 		var cRegionId = strings.Split(p.Id, "_")[0]
 		regionContentDir := strings.Join([]string{viper.GetString("ContentDir"), "regionen"}, "")
 

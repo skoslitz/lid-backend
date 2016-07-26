@@ -67,9 +67,22 @@ func (h Handlers) ReadDir(w http.ResponseWriter, r *http.Request) {
 		item.Path = strings.TrimPrefix(item.Path, h.ContentDir)
 		item.Self = strings.Join([]string{ApiPageUrl, item.Path}, "")
 
+		// set type from path (content folder) to ember model names
 		searchTerm := `(([\s\S]+?)[/]{1}([\s\S]+?)[.md])`
 		re := regexp.MustCompile(searchTerm)
-		item.Type = re.FindStringSubmatch(string(item.Path))[2]
+		it := re.FindStringSubmatch(string(item.Path))[2]
+		switch it {
+		case "regionen":
+			item.Type = "region-list"
+		case "themen":
+			item.Type = "topic-list"
+		case "exkursionen":
+			item.Type = "excursion-list"
+		case "reihe":
+			item.Type = "series"
+		case "meta":
+			item.Type = "meta"
+		}
 		item.SetRelationship(ApiUrl)
 
 	}
@@ -104,7 +117,19 @@ func (h Handlers) ReadRegionRelationships(w http.ResponseWriter, r *http.Request
 				item.Self = strings.Join([]string{ApiPageUrl, item.Path}, "")
 				searchTerm := `(([\s\S]+?)[/]{1}([\s\S]+?)[.md])`
 				re := regexp.MustCompile(searchTerm)
-				item.Type = re.FindStringSubmatch(string(item.Path))[2]
+				it := re.FindStringSubmatch(string(item.Path))[2]
+				switch it {
+				case "regionen":
+					item.Type = "region-list"
+				case "themen":
+					item.Type = "topic-list"
+				case "exkursionen":
+					item.Type = "excursion-list"
+				case "reihe":
+					item.Type = "series"
+				case "meta":
+					item.Type = "meta"
+				}
 				filteredContent = append(filteredContent, item)
 				item.SetRelationship(ApiUrl)
 			}
@@ -253,7 +278,19 @@ func (h Handlers) ReadPage(w http.ResponseWriter, r *http.Request) {
 
 	searchTerm := `(([\s\S]+?)[/]{1}([\s\S]+?)[.md])`
 	re := regexp.MustCompile(searchTerm)
-	page.Type = re.FindStringSubmatch(string(page.Path))[2]
+	pt := re.FindStringSubmatch(string(page.Path))[2]
+	switch pt {
+	case "regionen":
+		page.Type = "region"
+	case "themen":
+		page.Type = "topic"
+	case "exkursionen":
+		page.Type = "excursion"
+	case "reihe":
+		page.Type = "series"
+	case "meta":
+		page.Type = "meta"
+	}
 	page.SetRelationship(ApiUrl)
 
 	// print json

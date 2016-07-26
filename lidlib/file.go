@@ -25,10 +25,10 @@ func (f *File) Load(info os.FileInfo) {
 
 func (f *File) SetRelationship(ApiUrl string) {
 	switch f.Type {
-	case "regionen":
+	case "region-list":
 		f.Thema.Related = strings.Join([]string{ApiUrl, f.Path, "/themen"}, "")
 		f.Exkursion.Related = strings.Join([]string{ApiUrl, f.Path, "/exkursionen"}, "")
-	case "themen":
+	case "topic-list":
 		var cRegionId = strings.Split(f.Id, "_")[0]
 		regionContentDir := strings.Join([]string{viper.GetString("ContentDir"), "regionen"}, "")
 
@@ -44,7 +44,7 @@ func (f *File) SetRelationship(ApiUrl string) {
 			}
 		}
 
-	case "exkursionen":
+	case "excursion-list":
 		var cRegionId = strings.Split(f.Id, "_")[0]
 		regionContentDir := strings.Join([]string{viper.GetString("ContentDir"), "regionen"}, "")
 
