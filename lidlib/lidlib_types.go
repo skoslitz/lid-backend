@@ -23,9 +23,9 @@ type Frontmatter map[string]interface{}
 type Attribute struct {
 	Name     string      `json:"name"`
 	Path     string      `json:"path"`
-	IsDir    bool        `json:"isDir"`
+	IsDir    bool        `json:"is-dir"`
 	Size     int64       `json:"size"`
-	ModTime  string      `json:"modTime"`
+	ModTime  string      `json:"mod-time"`
 	Metadata Frontmatter `json:"metadata,omitempty"`
 	Content  string      `json:"content,omitempty"`
 }
