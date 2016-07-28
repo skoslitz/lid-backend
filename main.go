@@ -25,7 +25,16 @@ func init() {
 
 	applicationRoot, _ = os.Getwd()
 	contentRoot = applicationRoot + "/content/"
-	adminRoot = ("/home/kossi/lid-frontend/app")
+	adminRoot = "/home/kossi/lid-frontend/app"
+
+	// TODO:
+	// case contentRoot = applicationRoot + "//content/"
+	// should be false
+
+	// check if content path is valid
+	if _, err := os.Stat(contentRoot); os.IsNotExist(err) {
+		fmt.Println("Content path is not valid. Please check!")
+	}
 
 }
 
