@@ -24,6 +24,7 @@ type Handlers struct {
 
 	ContentDir string
 	AssetsDir  string
+	PreviewDir string
 }
 
 /*
@@ -490,6 +491,19 @@ func (h Handlers) CreateAsset(w http.ResponseWriter, r *http.Request) {
 
 func (h Handlers) PublishSite(w http.ResponseWriter, r *http.Request) {
 	output, err := lidlib.RunHugo()
+	if err != nil {
+		wrapError(err).Write(w)
+	}
+
+	printJson(w, struct {
+		Output string `json:"output"`
+	}{
+		Output: string(output),
+	})
+}
+
+func (h Handlers) PreviewSite(w http.ResponseWriter, r *http.Request) {
+	output, err := lidlib.RunHugoPreview()
 	if err != nil {
 		wrapError(err).Write(w)
 	}

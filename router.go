@@ -33,6 +33,10 @@ func NewRouter(config *RouterConfig) *mux.Router {
 	assetsFs := http.FileServer(http.Dir(config.Handlers.AssetsDir))
 	router.PathPrefix("/assets").Handler(http.StripPrefix("/assets/", assetsFs))
 
+	// serve preview from preview folder
+	previewFs := http.FileServer(http.Dir(config.Handlers.PreviewDir))
+	router.PathPrefix("/preview").Handler(http.StripPrefix("/preview/", previewFs))
+
 	// serve admin client files (html, css, etc)
 	adminFs := http.FileServer(http.Dir(config.AdminDir))
 	router.PathPrefix("/").Handler(adminFs)

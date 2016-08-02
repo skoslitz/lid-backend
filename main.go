@@ -48,9 +48,11 @@ func main() {
 	viper.SetDefault("ContentDir", contentRoot)
 	viper.SetDefault("AdminDir", adminRoot)
 	viper.SetDefault("AssetsDir", applicationRoot+"/static")
+	viper.SetDefault("PreviewDir", applicationRoot+"/public")
 
 	contentDir := viper.GetString("ContentDir")
 	assetsDir := viper.GetString("AssetsDir")
+	previewDir := viper.GetString("PreviewDir")
 
 	// create router
 	router := NewRouter(&RouterConfig{
@@ -60,6 +62,7 @@ func main() {
 			Page:       lidlib.NewPage(),
 			ContentDir: contentDir,
 			AssetsDir:  assetsDir,
+			PreviewDir: previewDir,
 		},
 		AdminDir: viper.GetString("AdminDir"),
 	})
@@ -68,6 +71,7 @@ func main() {
 	fmt.Println("Starting server on localhost:1313")
 	fmt.Println("Content in ", contentDir)
 	fmt.Println("Assets in ", assetsDir)
+	fmt.Println("Preview in ", previewDir)
 	fmt.Println("Admin in ", adminRoot)
 	log.Fatal(http.ListenAndServe("localhost:1313", router))
 

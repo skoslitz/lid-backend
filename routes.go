@@ -102,5 +102,11 @@ func GetRoutes(h *Handlers) Routes {
 			"/site/publish",
 			h.PublishSite,
 		},
+		Route{
+			"PreviewSite",
+			"POST",
+			"/site/preview",
+			h.PreviewSite,
+		},
 	}
 }
