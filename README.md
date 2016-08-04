@@ -42,8 +42,8 @@ Raw payload:
 - PreviewSite: POST /site/preview
 - PublishSite: POST /site/publish
 
-- PreviewFileServer runs on:http://localhost:1313/preview/
-  Note: Basepath = root /preview
+- PreviewFileServer runs on  `http://localhost:1313/preview/`
+  - Note: Basepath = root /preview
 
 
 *: under usage of [http-prompt](https://github.com/eliangcs/http-prompt)
