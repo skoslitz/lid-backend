@@ -282,11 +282,11 @@ func (h Handlers) ReadPage(w http.ResponseWriter, r *http.Request) {
 	pt := re.FindStringSubmatch(string(page.Path))[2]
 	switch pt {
 	case "regionen":
-		page.Type = "region"
+		page.Type = "regions"
 	case "themen":
-		page.Type = "topic"
+		page.Type = "topics"
 	case "exkursionen":
-		page.Type = "excursion"
+		page.Type = "excursions"
 	case "reihe":
 		page.Type = "series"
 	case "meta":
@@ -322,6 +322,22 @@ func (h Handlers) CreatePage(w http.ResponseWriter, r *http.Request) {
 
 	// trim content prefix from path
 	page.Path = strings.TrimPrefix(page.Path, h.ContentDir)
+	// set json resource type
+	searchTerm := `(([\s\S]+?)[/]{1}([\s\S]+?)[.md])`
+	re := regexp.MustCompile(searchTerm)
+	pt := re.FindStringSubmatch(string(page.Path))[2]
+	switch pt {
+	case "regionen":
+		page.Type = "regions"
+	case "themen":
+		page.Type = "topics"
+	case "exkursionen":
+		page.Type = "excursions"
+	case "reihe":
+		page.Type = "series"
+	case "meta":
+		page.Type = "meta"
+	}
 
 	printJson(w, &createPageResponse{Page: page})
 }
