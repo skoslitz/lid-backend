@@ -67,23 +67,28 @@ func (h Handlers) ReadDir(w http.ResponseWriter, r *http.Request) {
 	for _, item := range contents {
 		item.Path = strings.TrimPrefix(item.Path, h.ContentDir)
 		item.Self = strings.Join([]string{ApiPageUrl, item.Path}, "")
-
 		// set type from path (content folder) to ember model names
 		searchTerm := `(([\s\S]+?)[/]{1}([\s\S]+?)[.md])`
 		re := regexp.MustCompile(searchTerm)
-		it := re.FindStringSubmatch(string(item.Path))[2]
-		switch it {
-		case "regionen":
-			item.Type = "region-list"
-		case "themen":
-			item.Type = "topic-list"
-		case "exkursionen":
-			item.Type = "excursion-list"
-		case "reihe":
-			item.Type = "series"
-		case "meta":
-			item.Type = "meta"
+		reSlice := re.FindStringSubmatch(string(item.Path))
+
+		if len(reSlice) > 0 {
+			it := re.FindStringSubmatch(string(item.Path))[2]
+			switch it {
+			case "regionen":
+				item.Type = "region-list"
+			case "themen":
+				item.Type = "topic-list"
+			case "exkursionen":
+				item.Type = "excursion-list"
+			case "reihe":
+				item.Type = "series"
+			case "meta":
+				item.Type = "meta"
+			}
+
 		}
+
 		item.SetRelationship(ApiUrl)
 
 	}
@@ -279,19 +284,25 @@ func (h Handlers) ReadPage(w http.ResponseWriter, r *http.Request) {
 
 	searchTerm := `(([\s\S]+?)[/]{1}([\s\S]+?)[.md])`
 	re := regexp.MustCompile(searchTerm)
-	pt := re.FindStringSubmatch(string(page.Path))[2]
-	switch pt {
-	case "regionen":
-		page.Type = "regions"
-	case "themen":
-		page.Type = "topics"
-	case "exkursionen":
-		page.Type = "excursions"
-	case "reihe":
-		page.Type = "series"
-	case "meta":
-		page.Type = "meta"
+	reSlice := re.FindStringSubmatch(string(page.Path))
+
+	if len(reSlice) > 0 {
+		pt := re.FindStringSubmatch(string(page.Path))[2]
+		switch pt {
+		case "regionen":
+			page.Type = "regions"
+		case "themen":
+			page.Type = "topics"
+		case "exkursionen":
+			page.Type = "excursions"
+		case "reihe":
+			page.Type = "series"
+		case "meta":
+			page.Type = "meta"
+		}
+
 	}
+
 	page.SetRelationship(ApiUrl)
 
 	// print json
@@ -325,18 +336,23 @@ func (h Handlers) CreatePage(w http.ResponseWriter, r *http.Request) {
 	// set json resource type
 	searchTerm := `(([\s\S]+?)[/]{1}([\s\S]+?)[.md])`
 	re := regexp.MustCompile(searchTerm)
-	pt := re.FindStringSubmatch(string(page.Path))[2]
-	switch pt {
-	case "regionen":
-		page.Type = "regions"
-	case "themen":
-		page.Type = "topics"
-	case "exkursionen":
-		page.Type = "excursions"
-	case "reihe":
-		page.Type = "series"
-	case "meta":
-		page.Type = "meta"
+	reSlice := re.FindStringSubmatch(string(page.Path))
+
+	if len(reSlice) > 0 {
+		pt := re.FindStringSubmatch(string(page.Path))[2]
+		switch pt {
+		case "regionen":
+			page.Type = "regions"
+		case "themen":
+			page.Type = "topics"
+		case "exkursionen":
+			page.Type = "excursions"
+		case "reihe":
+			page.Type = "series"
+		case "meta":
+			page.Type = "meta"
+		}
+
 	}
 
 	printJson(w, &createPageResponse{Page: page})

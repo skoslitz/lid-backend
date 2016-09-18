@@ -17,7 +17,7 @@ var adminRoot string
 func init() {
 
 	// set lid repo root path
-	err := os.Chdir("/home/kossi/lid-site/")
+	err := os.Chdir("/Users/kOssi/lid-site/")
 
 	if err != nil {
 		fmt.Println("Can't change working directory")
