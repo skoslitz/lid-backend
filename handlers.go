@@ -465,17 +465,8 @@ func (h Handlers) CreateAsset(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Check page exists [optional]
-
-	// Remove .md extension
-	ext := path.Ext(dir)
-	dir = dir[0 : len(dir)-len(ext)]
-
-	// Create folder structure in assets folder
-	os.MkdirAll(dir, 0755)
-
 	// Get file form request
-	file, header, err := r.FormFile("file")
+	file, fileheader, err := r.FormFile("file")
 	if err != nil {
 		fmt.Fprintln(w, err)
 		return
@@ -483,12 +474,12 @@ func (h Handlers) CreateAsset(w http.ResponseWriter, r *http.Request) {
 	defer file.Close()
 
 	// Sanitize file name
-	filename := sanitize.Path(header.Filename)
+	filename := sanitize.Path(fileheader.Filename)
 	fp := path.Join(dir, filename)
 
 	// Check file name doesn't already exist
 
-	// TODO: save to path based on page name and sanitized file name
+	// TODO: save to path based on page type and id
 	out, err := os.Create(fp)
 	if err != nil {
 		fmt.Fprintf(w, "Unable to create the file for writing.")
