@@ -15,6 +15,7 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/kennygrant/sanitize"
 	"github.com/skoslitz/lid-backend/lidlib"
+	"github.com/spf13/viper"
 )
 
 type Handlers struct {
@@ -290,11 +291,11 @@ func (h Handlers) ReadPage(w http.ResponseWriter, r *http.Request) {
 		pt := re.FindStringSubmatch(string(page.Path))[2]
 		switch pt {
 		case "regionen":
-			page.Type = "regions"
+			page.Type = "region"
 		case "themen":
-			page.Type = "topics"
+			page.Type = "topic"
 		case "exkursionen":
-			page.Type = "excursions"
+			page.Type = "excursion"
 		case "reihe":
 			page.Type = "series"
 		case "meta":
@@ -304,6 +305,47 @@ func (h Handlers) ReadPage(w http.ResponseWriter, r *http.Request) {
 	}
 
 	page.SetRelationship(ApiUrl)
+
+	// try and read assets dir of content page
+	var assets lidlib.Files
+	var assetsFilePath string
+	assetsDir := viper.GetString("AssetsDir")
+
+	// query assets file path from request path
+	requestPath := mux.Vars(r)["path"]
+	contentType := strings.Split(requestPath, "/")[0]
+	fileName := strings.Split(requestPath, "/")[1]
+	regionNr := strings.Split(fileName, "_")[0]
+	hugoID := strings.Split(fileName, "-")[0]
+
+	switch contentType {
+	case "themen":
+		assetsFilePath = strings.Join([]string{assetsDir, "img", regionNr, contentType, hugoID}, "/")
+	case "exkursionen":
+		assetsFilePath = strings.Join([]string{assetsDir, "img", regionNr, contentType, hugoID}, "/")
+	case "regionen":
+		regionNr := strings.Split(fileName, "-")[0]
+		assetsFilePath = strings.Join([]string{assetsDir, "img", regionNr}, "/")
+	default:
+		assetsFilePath = ""
+	}
+
+	if assetsFilePath != "" {
+		assets, err = h.Dir.Read(assetsFilePath)
+		if err != nil {
+			errDirNotFound.Write(w)
+			return
+		}
+
+		page.Bilder = make([]string, len(assets))
+		apiAssetsPath := strings.Join([]string{"http://", r.Host, "/assets"}, "")
+		assetsPath := strings.Join([]string{apiAssetsPath, "img", regionNr, contentType, hugoID}, "/")
+		// write assetsDir content to page.Bilder slice
+		for i, item := range assets {
+			assetsUrl := strings.Join([]string{assetsPath, item.Name}, "/")
+			page.Bilder[i] = assetsUrl
+		}
+	}
 
 	// print json
 	printJson(w, &readPageResponse{Page: page})

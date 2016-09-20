@@ -34,6 +34,7 @@ type Relationship struct {
 	Region    `json:"region"`
 	Thema     `json:"themen"`
 	Exkursion `json:"exkursionen"`
+	Bilder    []string `json:"bilder,omitempty"`
 }
 
 // File represents a file within directory context
