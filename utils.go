@@ -4,7 +4,12 @@ import (
 	"encoding/json"
 	"net/http"
 	"os"
+	"strings"
 )
+
+func shortcodeFileName(f string) string {
+	return strings.Split(f, "-")[1]
+}
 
 func containsContentType(t string) bool {
 	ctypes := [...]string{"themen", "exkursionen"}

@@ -17,6 +17,13 @@ type Exkursion struct {
 	Link `json:"links"`
 }
 
+type Bild struct {
+	Src string `json:"src"`
+	// Width is not actual img size width!
+	Width         int    `json:"width"`
+	ShortcodeName string `json:"shortcode-name"`
+}
+
 // Frontmatter stores encodeable data
 type Frontmatter map[string]interface{}
 
@@ -28,13 +35,13 @@ type Attribute struct {
 	ModTime  string      `json:"mod-time"`
 	Metadata Frontmatter `json:"metadata,omitempty"`
 	Content  string      `json:"content,omitempty"`
+	Bilder   []*Bild     `json:"images,omitempty"`
 }
 
 type Relationship struct {
 	Region    `json:"region"`
 	Thema     `json:"themen"`
 	Exkursion `json:"exkursionen"`
-	Bilder    []string `json:"bilder,omitempty"`
 }
 
 // File represents a file within directory context

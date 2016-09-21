@@ -306,12 +306,14 @@ func (h Handlers) ReadPage(w http.ResponseWriter, r *http.Request) {
 
 	page.SetRelationship(ApiUrl)
 
-	// try and read assets dir of content page
+	// Append content page related images info
+	// -------------------------------------------
+
 	var assets lidlib.Files
 	var assetsFilePath string
-	assetsDir := viper.GetString("AssetsDir")
+	assetsRoot := viper.GetString("AssetsDir")
 
-	// query assets file path from request path
+	// compose assetsFilePath from request path
 	requestPath := mux.Vars(r)["path"]
 	contentType := strings.Split(requestPath, "/")[0]
 	fileName := strings.Split(requestPath, "/")[1]
@@ -320,12 +322,12 @@ func (h Handlers) ReadPage(w http.ResponseWriter, r *http.Request) {
 
 	switch contentType {
 	case "themen":
-		assetsFilePath = strings.Join([]string{assetsDir, "img", regionNr, contentType, hugoID}, "/")
+		assetsFilePath = strings.Join([]string{assetsRoot, "img", regionNr, contentType, hugoID}, "/")
 	case "exkursionen":
-		assetsFilePath = strings.Join([]string{assetsDir, "img", regionNr, contentType, hugoID}, "/")
+		assetsFilePath = strings.Join([]string{assetsRoot, "img", regionNr, contentType, hugoID}, "/")
 	case "regionen":
 		regionNr := strings.Split(fileName, "-")[0]
-		assetsFilePath = strings.Join([]string{assetsDir, "img", regionNr}, "/")
+		assetsFilePath = strings.Join([]string{assetsRoot, "img", regionNr}, "/")
 	default:
 		assetsFilePath = ""
 	}
@@ -337,17 +339,26 @@ func (h Handlers) ReadPage(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		page.Bilder = make([]string, len(assets))
+		// define paths to build assetsUrl
 		apiAssetsPath := strings.Join([]string{"http://", r.Host, "/assets"}, "")
 		assetsPath := strings.Join([]string{apiAssetsPath, "img", regionNr, contentType, hugoID}, "/")
-		// write assetsDir content to page.Bilder slice
-		for i, item := range assets {
-			assetsUrl := strings.Join([]string{assetsPath, item.Name}, "/")
-			page.Bilder[i] = assetsUrl
+		// write assetsRoot content to page.Bilder slice
+		for _, item := range assets {
+
+			if !item.IsDir {
+				bild := &lidlib.Bild{
+					Src:           strings.Join([]string{assetsPath, item.Name}, "/"),
+					Width:         700,
+					ShortcodeName: shortcodeFileName(item.Name),
+				}
+
+				page.Bilder = append(page.Bilder, bild)
+			}
 		}
 	}
+	// -------------------------------------------
 
-	// print json
+	// print json pageresponse
 	printJson(w, &readPageResponse{Page: page})
 }
 
