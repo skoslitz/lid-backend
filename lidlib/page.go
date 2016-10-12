@@ -170,7 +170,7 @@ func (p *PageFile) SetRelationship(ApiUrl string) {
 		p.Region.Related = strings.Join([]string{ApiUrl, "dir", "/regionen"}, "")
 	case "topic":
 		var cRegionId = strings.Split(p.Id, "_")[0]
-		regionContentDir := strings.Join([]string{viper.GetString("ContentDir"), "regionen"}, "")
+		regionContentDir := strings.Join([]string{viper.GetString("contentpath"), "regionen"}, "")
 
 		// read contents of regionContentDir
 		var contents Files
@@ -180,12 +180,12 @@ func (p *PageFile) SetRelationship(ApiUrl string) {
 		for _, item := range contents {
 			var cid = strings.Split(item.Id, "-")[0]
 			if cRegionId == cid {
-				p.Region.Related = strings.Join([]string{ApiUrl, "page/", strings.TrimPrefix(item.Path, viper.GetString("ContentDir"))}, "")
+				p.Region.Related = strings.Join([]string{ApiUrl, "page/", strings.TrimPrefix(item.Path, viper.GetString("contentpath"))}, "")
 			}
 		}
 	case "excursion":
 		var cRegionId = strings.Split(p.Id, "_")[0]
-		regionContentDir := strings.Join([]string{viper.GetString("ContentDir"), "regionen"}, "")
+		regionContentDir := strings.Join([]string{viper.GetString("contentpath"), "regionen"}, "")
 
 		// read contents of regionContentDir
 		var contents Files
@@ -195,7 +195,7 @@ func (p *PageFile) SetRelationship(ApiUrl string) {
 		for _, item := range contents {
 			var cid = strings.Split(item.Id, "-")[0]
 			if cRegionId == cid {
-				p.Region.Related = strings.Join([]string{ApiUrl, "page/", strings.TrimPrefix(item.Path, viper.GetString("ContentDir"))}, "")
+				p.Region.Related = strings.Join([]string{ApiUrl, "page/", strings.TrimPrefix(item.Path, viper.GetString("contentpath"))}, "")
 			}
 		}
 	}

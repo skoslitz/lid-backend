@@ -70,6 +70,7 @@ func (h Handlers) ReadDir(w http.ResponseWriter, r *http.Request) {
 		// TODO
 		// Convert item.Path to raw string, then strings.Replace(item.Path, "\\", "/", -1)
 		// or regexp.Replace \ with /
+		// see also func ReadRegionRelationships
 
 		item.Path = strings.TrimPrefix(item.Path, h.ContentDir)
 		item.Self = strings.Join([]string{ApiPageUrl, item.Path}, "")

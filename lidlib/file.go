@@ -30,7 +30,7 @@ func (f *File) SetRelationship(ApiUrl string) {
 		f.Exkursion.Related = strings.Join([]string{ApiUrl, f.Path, "/exkursionen"}, "")
 	case "topic-list":
 		var cRegionId = strings.Split(f.Id, "_")[0]
-		regionContentDir := strings.Join([]string{viper.GetString("ContentDir"), "regionen"}, "")
+		regionContentDir := strings.Join([]string{viper.GetString("contentpath"), "regionen"}, "")
 
 		// read contents of regionContentDir
 		var contents Files
@@ -40,13 +40,13 @@ func (f *File) SetRelationship(ApiUrl string) {
 		for _, item := range contents {
 			var cid = strings.Split(item.Id, "-")[0]
 			if cRegionId == cid {
-				f.Region.Related = strings.Join([]string{ApiUrl, "page/", strings.TrimPrefix(item.Path, viper.GetString("ContentDir"))}, "")
+				f.Region.Related = strings.Join([]string{ApiUrl, "page/", strings.TrimPrefix(item.Path, viper.GetString("contentpath"))}, "")
 			}
 		}
 
 	case "excursion-list":
-		var cRegionId = strings.Split(f.Id, "_")[0]
-		regionContentDir := strings.Join([]string{viper.GetString("ContentDir"), "regionen"}, "")
+		var cRegionId = strings.Split(f.Id, "-")[0]
+		regionContentDir := strings.Join([]string{viper.GetString("contentpath"), "regionen"}, "")
 
 		// read contents of regionContentDir
 		var contents Files
@@ -56,7 +56,7 @@ func (f *File) SetRelationship(ApiUrl string) {
 		for _, item := range contents {
 			var cid = strings.Split(item.Id, "-")[0]
 			if cRegionId == cid {
-				f.Region.Related = strings.Join([]string{ApiUrl, "page/", strings.TrimPrefix(item.Path, viper.GetString("ContentDir"))}, "")
+				f.Region.Related = strings.Join([]string{ApiUrl, "page/", strings.TrimPrefix(item.Path, viper.GetString("contentpath"))}, "")
 			}
 		}
 	}
