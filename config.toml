@@ -1,0 +1,5 @@
+repopath = "/home/kossi/lid-site/"
+contentpath = "/home/kossi/lid-site/content/"
+assetspath = "/home/kossi/lid-site/static/"
+previewpath = "/home/kossi/lid-site/public/"
+#adminpath = ""

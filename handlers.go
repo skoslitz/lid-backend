@@ -311,7 +311,7 @@ func (h Handlers) ReadPage(w http.ResponseWriter, r *http.Request) {
 
 	var assets lidlib.Files
 	var assetsFilePath string
-	assetsRoot := viper.GetString("AssetsDir")
+	assetsDir := viper.GetString("assetspath")
 
 	// compose assetsFilePath from request path
 	requestPath := mux.Vars(r)["path"]
@@ -322,12 +322,12 @@ func (h Handlers) ReadPage(w http.ResponseWriter, r *http.Request) {
 
 	switch contentType {
 	case "themen":
-		assetsFilePath = strings.Join([]string{assetsRoot, "img", regionNr, contentType, hugoID}, "/")
+		assetsFilePath = strings.Join([]string{assetsDir, "img", regionNr, contentType, hugoID}, "/")
 	case "exkursionen":
-		assetsFilePath = strings.Join([]string{assetsRoot, "img", regionNr, contentType, hugoID}, "/")
+		assetsFilePath = strings.Join([]string{assetsDir, "img", regionNr, contentType, hugoID}, "/")
 	case "regionen":
 		regionNr := strings.Split(fileName, "-")[0]
-		assetsFilePath = strings.Join([]string{assetsRoot, "img", regionNr}, "/")
+		assetsFilePath = strings.Join([]string{assetsDir, "img", regionNr}, "/")
 	default:
 		assetsFilePath = ""
 	}
@@ -342,7 +342,7 @@ func (h Handlers) ReadPage(w http.ResponseWriter, r *http.Request) {
 		// define paths to build assetsUrl
 		apiAssetsPath := strings.Join([]string{"http://", r.Host, "/assets"}, "")
 		assetsPath := strings.Join([]string{apiAssetsPath, "img", regionNr, contentType, hugoID}, "/")
-		// write assetsRoot content to page.Bilder slice
+		// write assetsDir content to page.Bilder slice
 		for _, item := range assets {
 
 			if !item.IsDir {

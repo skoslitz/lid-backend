@@ -10,49 +10,30 @@ import (
 	"github.com/spf13/viper"
 )
 
-var applicationRoot string
-var contentRoot string
-var adminRoot string
-
 func init() {
 
-	// set lid repo root path
-	err := os.Chdir("/Users/kOssi/lid-site/")
+	configRoot, _ := os.Getwd()
 
-	if err != nil {
-		fmt.Println("Can't change working directory")
-	}
-
-	applicationRoot, _ = os.Getwd()
-	contentRoot = applicationRoot + "/content/"
-	adminRoot = "/home/kossi/lid-frontend/app"
-
-	// TODO:
-	// case contentRoot = applicationRoot + "//content/"
-	// should be false
-
-	// check if content path is valid
-	if _, err := os.Stat(contentRoot); os.IsNotExist(err) {
-		fmt.Println("Content path is not valid. Please check!")
-	}
+	// setup config file
+	// Find and read the config
+	viper.SetConfigName("config")   // name of config file (without extension)
+	viper.AddConfigPath(configRoot) // path to look for the config file in
+	viper.ReadInConfig()            // Find and read the config file
 
 }
 
 func main() {
 
-	// setup config file
-	viper.SetConfigName("config")
-	viper.ReadInConfig()
+	applicationRoot := viper.GetString("repopath")
+	contentDir := viper.GetString("contentpath")
+	assetsDir := viper.GetString("assetspath")
+	previewDir := viper.GetString("previewpath")
+	//adminDir := viper.GetString("adminpath")
 
-	// set config defaults
-	viper.SetDefault("ContentDir", contentRoot)
-	viper.SetDefault("AdminDir", adminRoot)
-	viper.SetDefault("AssetsDir", applicationRoot+"/static")
-	viper.SetDefault("PreviewDir", applicationRoot+"/public")
-
-	contentDir := viper.GetString("ContentDir")
-	assetsDir := viper.GetString("AssetsDir")
-	previewDir := viper.GetString("PreviewDir")
+	// check if content path is valid
+	if _, err := os.Stat(contentDir); os.IsNotExist(err) {
+		fmt.Println("LiD Inhaltspfad konnte nicht gefunden werden. Bitte die config.toml prüfen!")
+	}
 
 	// create router
 	router := NewRouter(&RouterConfig{
@@ -64,15 +45,15 @@ func main() {
 			AssetsDir:  assetsDir,
 			PreviewDir: previewDir,
 		},
-		AdminDir: viper.GetString("AdminDir"),
+		AdminDir: viper.GetString("adminpath"),
 	})
 
 	// start http server
-	fmt.Println("Starting server on localhost:1313")
-	fmt.Println("Content in ", contentDir)
-	fmt.Println("Assets in ", assetsDir)
-	fmt.Println("Preview in ", previewDir)
-	fmt.Println("Admin in ", adminRoot)
+	fmt.Println("Server gestartet auf localhost:1313")
+	fmt.Println("LiD Inhaltspfad: ", contentDir)
+	fmt.Println("LiD Anhangspfad: ", assetsDir)
+	fmt.Println("LiD Vorschaupfad ", previewDir)
+	//fmt.Println("Admin in ", adminDir)
 	log.Fatal(http.ListenAndServe("localhost:1313", router))
 
 }

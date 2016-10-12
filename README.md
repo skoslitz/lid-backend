@@ -4,9 +4,10 @@
 
 - First, install [golang](https://golang.org/doc/install#install)
 - Then: `go get github.com/skoslitz/lid-backend`
-- Edit `main.go` on line 20 to specify content repo path
+- Edit edit `config.toml` with required path infos
 - Compile with `go build`
 - Run with `./lid-backend`
+- NOTE: If you move lid-backend exec, always take config.toml along
 
 ### Endpoints:
 
