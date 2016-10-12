@@ -26,6 +26,9 @@ func (a *apiError) Write(w http.ResponseWriter) {
 	printError(w, a)
 }
 
+var errInvalidAssetDir = newApiError(http.StatusBadRequest,
+	"Invalid Assets Directory. Folder name must equal region number. Please check repo static folder!")
+
 var errInvalidDir = newApiError(http.StatusBadRequest,
 	"Invalid Directory")
 

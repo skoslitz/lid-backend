@@ -18,10 +18,8 @@ type Exkursion struct {
 }
 
 type Bild struct {
-	Src string `json:"src"`
-	// Width is not actual img size width!
-	Width         int    `json:"width"`
-	ShortcodeName string `json:"shortcode-name"`
+	Src      string `json:"src"`
+	Filename string `json:"filename"`
 }
 
 // Frontmatter stores encodeable data
