@@ -1,9 +1,12 @@
 package lidlib
 
-import "os/exec"
+import (
+	"os/exec"
+	"strings"
+)
 
-func RunHugo() ([]byte, error) {
-	hugo := exec.Command("hugo")
+func RunHugo(repoPath string, webFolder string) ([]byte, error) {
+	hugo := exec.Command("hugo", "--source="+repoPath, "--destination="+webFolder)
 
 	output, err := hugo.Output()
 	if err != nil {
@@ -13,9 +16,9 @@ func RunHugo() ([]byte, error) {
 	return output, nil
 }
 
-func RunHugoPreview() ([]byte, error) {
-	baseURL := "http://localhost:1313/preview/"
-	hugo := exec.Command("hugo", "--baseURL="+baseURL, "--canonifyURLs=true")
+func RunHugoPreview(baseUrlPrefix string, repoPath string) ([]byte, error) {
+	baseURL := strings.Join([]string{baseUrlPrefix, "/preview/"}, "")
+	hugo := exec.Command("hugo", "--source="+repoPath, "--baseURL="+baseURL, "--canonifyURLs=true")
 
 	output, err := hugo.Output()
 	if err != nil {

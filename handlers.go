@@ -574,7 +574,10 @@ func (h Handlers) CreateAsset(w http.ResponseWriter, r *http.Request) {
 */
 
 func (h Handlers) PublishSite(w http.ResponseWriter, r *http.Request) {
-	output, err := lidlib.RunHugo()
+	repoPath := viper.GetString("repopath")
+	webFolder := viper.GetString("webfolderpath")
+
+	output, err := lidlib.RunHugo(repoPath, webFolder)
 	if err != nil {
 		wrapError(err).Write(w)
 	}
@@ -587,7 +590,10 @@ func (h Handlers) PublishSite(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h Handlers) PreviewSite(w http.ResponseWriter, r *http.Request) {
-	output, err := lidlib.RunHugoPreview()
+	baseUrlPrefix := strings.Join([]string{"http://", r.Host}, "")
+	repoPath := viper.GetString("repopath")
+
+	output, err := lidlib.RunHugoPreview(baseUrlPrefix, repoPath)
 	if err != nil {
 		wrapError(err).Write(w)
 	}
