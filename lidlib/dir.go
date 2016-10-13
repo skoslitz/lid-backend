@@ -32,7 +32,7 @@ func (d Dir) Read(dirname string) (Files, error) {
 
 	// convert os.FileInfo into Files
 	for i, info := range contents {
-		files[i] = NewFile(filepath.Join(dirname, info.Name()), info)
+		files[i] = NewFile(filepath.ToSlash(filepath.Join(dirname, info.Name())), info)
 	}
 
 	return files, nil

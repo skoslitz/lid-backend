@@ -61,7 +61,7 @@ func (p Page) Read(fp string) (*PageFile, error) {
 		Id: filepath.Base(fp),
 		Attribute: Attribute{
 			Name:     filepath.Base(fp),
-			Path:     fp,
+			Path:     filepath.ToSlash(fp),
 			Size:     fileStat.Size(),
 			ModTime:  fileStat.ModTime().Format("02/01/2006"),
 			Metadata: metadata,

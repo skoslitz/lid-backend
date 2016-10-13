@@ -2,6 +2,7 @@ package lidlib
 
 import (
 	"os"
+	"path/filepath"
 	"strings"
 
 	"github.com/spf13/viper"
@@ -10,7 +11,7 @@ import (
 // NewFile constructs a new File based on a path and file info
 func NewFile(path string, info os.FileInfo) *File {
 	file := new(File)
-	file.Path = path
+	file.Path = filepath.ToSlash(path)
 	file.Load(info)
 	return file
 }
