@@ -447,8 +447,34 @@ func (h Handlers) UpdatePage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	var ApiUrl = strings.Join([]string{"http://", r.Host, "/api/"}, "")
+	var ApiPageUrl = strings.Join([]string{"http://", r.Host, "/api/page/"}, "")
 	// trim content prefix from path
 	page.Path = strings.TrimPrefix(page.Path, h.ContentDir)
+	page.Self = strings.Join([]string{ApiPageUrl, page.Path}, "")
+
+	searchTerm := `(([\s\S]+?)[/]{1}([\s\S]+?)[.md])`
+	re := regexp.MustCompile(searchTerm)
+	reSlice := re.FindStringSubmatch(string(page.Path))
+
+	if len(reSlice) > 0 {
+		pt := re.FindStringSubmatch(string(page.Path))[2]
+		switch pt {
+		case "regionen":
+			page.Type = "region"
+		case "themen":
+			page.Type = "topic"
+		case "exkursionen":
+			page.Type = "excursion"
+		case "reihe":
+			page.Type = "series"
+		case "meta":
+			page.Type = "meta"
+		}
+
+	}
+
+	page.SetRelationship(ApiUrl)
 
 	printJson(w, &updatePageResponse{Page: page})
 }
