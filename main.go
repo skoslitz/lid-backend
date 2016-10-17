@@ -5,6 +5,8 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"os/exec"
+	"runtime"
 
 	"github.com/skoslitz/lid-backend/lidlib"
 	"github.com/spf13/viper"
@@ -48,11 +50,23 @@ func main() {
 		AdminDir: viper.GetString("adminpath"),
 	})
 
+	switch runtime.GOOS {
+	case "linux":
+		exec.Command("xdg-open", "http://localhost:1313/api/dir/regionen").Start()
+	case "windows":
+		exec.Command("cmd", "/c", "start", "http://localhost:1313/api/dir/regionen").Start()
+	case "darwin":
+		exec.Command("open", "http://localhost:1313/api/dir/regionen").Start()
+	default:
+		fmt.Errorf("unsupported platform")
+	}
+
 	// start http server
 	fmt.Println("Server gestartet auf localhost:1313")
 	fmt.Println("LiD Inhaltspfad: ", contentDir)
 	fmt.Println("LiD Anhangspfad: ", assetsDir)
 	fmt.Println("LiD Vorschaupfad ", previewDir)
+	fmt.Println("Browser mit Regionenendpunkt wird geladen.")
 	//fmt.Println("Admin in ", adminDir)
 	log.Fatal(http.ListenAndServe("localhost:1313", router))
 
