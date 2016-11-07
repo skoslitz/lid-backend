@@ -383,7 +383,6 @@ func (h Handlers) CreatePage(w http.ResponseWriter, r *http.Request) {
 	}
 
 	metadata := pageFileJSON.PageFile.Metadata
-
 	content := []byte(pageFileJSON.PageFile.Content)
 
 	page, err := h.Page.Create(fp, metadata, content)
@@ -394,20 +393,46 @@ func (h Handlers) CreatePage(w http.ResponseWriter, r *http.Request) {
 
 	// trim content prefix from path
 	page.Path = strings.TrimPrefix(page.Path, h.ContentDir)
-	// set json resource type
+
+	// prepare json resource type
 	searchTerm := `(([\s\S]+?)[/]{1}([\s\S]+?)[.md])`
 	re := regexp.MustCompile(searchTerm)
 	reSlice := re.FindStringSubmatch(string(page.Path))
 
+	// prepare page static img folder check
+	hugoId := fmt.Sprint(page.Metadata["id"])
+	regionNumber := fmt.Sprint(page.Metadata["bandnummer"])
+	bandnummer := hugoId[:2]
+	regionAssetfolder := h.AssetsDir + "img/" + regionNumber
+	topicAssetfolder := h.AssetsDir + "img/" + bandnummer + "/themen/" + hugoId
+	excursionAssetfolder := h.AssetsDir + "img/" + bandnummer + "/exkursionen/" + hugoId
+
+	// set json resource type
+	// check img static folder
 	if len(reSlice) > 0 {
 		pt := re.FindStringSubmatch(string(page.Path))[2]
 		switch pt {
 		case "regionen":
 			page.Type = "regions"
+
+			if dirExists(regionAssetfolder) || fileExists(regionAssetfolder) == false {
+				os.MkdirAll(regionAssetfolder, 0755)
+				fmt.Println("Anhangsverzeichnis wird erstellt ", regionAssetfolder)
+			}
 		case "themen":
 			page.Type = "topics"
+
+			if dirExists(topicAssetfolder) || fileExists(topicAssetfolder) == false {
+				os.MkdirAll(topicAssetfolder, 0755)
+				fmt.Println("Anhangsverzeichnis wird erstellt ", topicAssetfolder)
+			}
 		case "exkursionen":
 			page.Type = "excursions"
+
+			if dirExists(excursionAssetfolder) || fileExists(excursionAssetfolder) == false {
+				os.MkdirAll(excursionAssetfolder, 0755)
+				fmt.Println("Anhangsverzeichnis wird erstellt ", excursionAssetfolder)
+			}
 		case "reihe":
 			page.Type = "series"
 		case "meta":
