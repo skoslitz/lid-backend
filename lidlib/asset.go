@@ -41,7 +41,7 @@ func (a Asset) Resample() {
 
 	out := resize.Resize(300, 0, img, resize.Bilinear)
 
-	resampledDir := path.Join(a.Path, "_resampled")
+	resampledDir := path.Join(a.Path, "_vorschaubilder")
 	os.MkdirAll(resampledDir, 0755)
 
 	resampledFp := path.Join(resampledDir, a.Name)
