@@ -646,7 +646,9 @@ func (h Handlers) PreviewSite(w http.ResponseWriter, r *http.Request) {
 
 	output, err := lidlib.RunHugoPreview(baseUrlPrefix, repoPath)
 	if err != nil {
+		fmt.Println("hugo Stdout should appear as message")
 		wrapError(err).Write(w)
+		fmt.Println(output)
 	}
 
 	printJson(w, struct {
