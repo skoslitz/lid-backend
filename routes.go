@@ -94,6 +94,12 @@ func GetRoutes(h *Handlers) Routes {
 			"/asset/{path:.*}",
 			h.CreateAsset,
 		},
+		Route{
+			"DeleteAsset",
+			"DELETE",
+			"/asset/{path:.*}",
+			h.DeleteAsset,
+		},
 
 		// misc
 		Route{

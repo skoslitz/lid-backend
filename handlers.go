@@ -611,6 +611,7 @@ func (h Handlers) CreateAsset(w http.ResponseWriter, r *http.Request) {
 	}
 
 	asset.Resample()
+	asset.Thumbnail()
 
 	asset.Path = strings.TrimPrefix(asset.Path, h.AssetsDir)
 
@@ -618,6 +619,23 @@ func (h Handlers) CreateAsset(w http.ResponseWriter, r *http.Request) {
 	printJson(w, &createAssetResponse{Asset: asset})
 
 	// Write filename into page [optional]
+}
+
+// Delete deletes a page
+func (h Handlers) DeleteAsset(w http.ResponseWriter, r *http.Request) {
+	fp, err := h.fixPathWithDir(mux.Vars(r)["path"], h.AssetsDir)
+	if err != nil {
+		fmt.Fprint(w, err)
+		return
+	}
+
+	fmt.Println("Delete ", fp)
+
+	// remove the file
+	os.Remove(fp)
+
+	// don't need to send anything back
+	w.WriteHeader(http.StatusNoContent)
 }
 
 /*

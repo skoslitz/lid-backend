@@ -20,10 +20,33 @@ func NewAsset(path, filename string, file io.Reader) (*Asset, error) {
 	return nil, nil
 }
 
+func (a Asset) Thumbnail() {
+	fp := path.Join(a.Path, a.Name)
+
+	fmt.Println("Create 1000px thumbnail ", fp)
+
+	file, err := os.Open(fp)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
+	img, err := jpeg.Decode(file)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
+	out := resize.Resize(1000, 0, img, resize.Bilinear)
+	defer file.Close()
+
+	jpeg.Encode(file, out, nil)
+}
+
 func (a Asset) Resample() {
 	fp := path.Join(a.Path, a.Name)
 
-	fmt.Println("Resampling", fp)
+	fmt.Println("Resampling to 300px thumbnail ", fp)
 
 	file, err := os.Open(fp)
 	if err != nil {
