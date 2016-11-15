@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"net/http"
 	"os"
 	"path"
@@ -679,6 +680,28 @@ func (h Handlers) PreviewSite(w http.ResponseWriter, r *http.Request) {
 	}{
 		Output: string(output),
 	})
+}
+
+// auth methods
+func (h Handlers) CheckWebadmin(w http.ResponseWriter, r *http.Request) {
+	webFolder := viper.GetString("webfolderpath")
+	_, err := ioutil.ReadDir(webFolder)
+	if err != nil {
+		printJson(w, false)
+	} else {
+		printJson(w, true)
+	}
+
+}
+
+func (h Handlers) CheckEditor(w http.ResponseWriter, r *http.Request) {
+	contentFolder := viper.GetString("contentpath")
+	_, err := ioutil.ReadDir(contentFolder)
+	if err != nil {
+		printJson(w, false)
+	} else {
+		printJson(w, true)
+	}
 }
 
 func (h Handlers) fixPathWithDir(p string, dir string) (string, error) {

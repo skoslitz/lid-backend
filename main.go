@@ -30,7 +30,7 @@ func main() {
 	contentDir := viper.GetString("contentpath")
 	assetsDir := viper.GetString("assetspath")
 	previewDir := viper.GetString("previewpath")
-	//adminDir := viper.GetString("adminpath")
+	adminDir := viper.GetString("adminpath")
 
 	// check if content path is valid
 	if _, err := os.Stat(contentDir); os.IsNotExist(err) {
@@ -69,7 +69,7 @@ func main() {
 	fmt.Println("LiD Anhangspfad: ", assetsDir)
 	fmt.Println("LiD Vorschaupfad ", previewDir)
 	//fmt.Println("Browser mit Regionenendpunkt wird geladen.")
-	//fmt.Println("Admin in ", adminDir)
+	fmt.Println("Admin in ", adminDir)
 	log.Fatal(http.ListenAndServe("localhost:1313", router))
 
 }

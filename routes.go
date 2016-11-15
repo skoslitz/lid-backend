@@ -73,6 +73,20 @@ func GetRoutes(h *Handlers) Routes {
 			h.DeletePage,
 		},
 
+		// auth
+		Route{
+			"CheckWebadmin",
+			"GET",
+			"/checkauth/webadmin",
+			h.CheckWebadmin,
+		},
+		Route{
+			"CheckEditor",
+			"GET",
+			"/checkauth/editor",
+			h.CheckEditor,
+		},
+
 		// config
 		Route{
 			"ReadConfig",
