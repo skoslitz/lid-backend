@@ -1,15 +1,16 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 	"os"
 	/*	"os/exec"
 		"runtime"*/
 
+	"github.com/fatih/color"
 	"github.com/skoslitz/lid-backend/lidlib"
 	"github.com/spf13/viper"
+	"github.com/stevedomin/termtable"
 )
 
 func init() {
@@ -34,7 +35,9 @@ func main() {
 
 	// check if content path is valid
 	if _, err := os.Stat(contentDir); os.IsNotExist(err) {
-		fmt.Println("LiD Inhaltspfad konnte nicht gefunden werden. Bitte die config.toml prüfen!")
+		messenger := color.New(color.Bold, color.FgRed).PrintlnFunc()
+		messenger("LiD-online Repo konnte nicht gefunden werden. Bitte die config.toml prüfen!")
+		log.Fatal()
 	}
 
 	// create router
@@ -62,14 +65,25 @@ func main() {
 		fmt.Errorf("unsupported platform")
 	}*/
 
+	// lid-backend dashboard
+	t := termtable.NewTable(nil, &termtable.TableOptions{
+		Padding:      1,
+		UseSeparator: true,
+	})
+	// t.SetHeader([]string{"LOWERCASE", "", ""})
+	t.AddRow([]string{"lid-repo/content", contentDir})
+	t.AddRow([]string{"lid-repo/static", assetsDir})
+	t.AddRow([]string{"lid-repo/public", previewDir})
+	t.AddRow([]string{"lid-frontend", adminDir})
+	messenger := color.New(color.Bold, color.FgGreen).PrintlnFunc()
+	messenger("+--------------------------------------------------------------+")
+	messenger("              LiD Online Content API                            ")
+	messenger(t.Render())
+	messenger("  Serveradresse: localhost:1313                                 ")
+	messenger("  Browse http://localhost:1313/api/dir/regionen                        ")
+	messenger("+--------------------------------------------------------------+")
+
 	// start http server
-	fmt.Println("LiD Inhaltsschnittstelle wird gestartet. -- server: localhost:1313 --")
-	fmt.Println("------------------------------")
-	fmt.Println("LiD Inhaltspfad: ", contentDir)
-	fmt.Println("LiD Anhangspfad: ", assetsDir)
-	fmt.Println("LiD Vorschaupfad ", previewDir)
-	//fmt.Println("Browser mit Regionenendpunkt wird geladen.")
-	fmt.Println("Admin in ", adminDir)
 	log.Fatal(http.ListenAndServe("localhost:1313", router))
 
 }

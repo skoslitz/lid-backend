@@ -418,21 +418,24 @@ func (h Handlers) CreatePage(w http.ResponseWriter, r *http.Request) {
 
 			if dirExists(regionAssetfolder) || fileExists(regionAssetfolder) == false {
 				os.MkdirAll(regionAssetfolder, 0755)
-				fmt.Println("Anhangsverzeichnis wird erstellt ", regionAssetfolder)
+				fmt.Println("Erstelle Ordner ", regionAssetfolder)
+				fmt.Println(("+--------------------------------------------------------------+"))
 			}
 		case "themen":
 			page.Type = "topics"
 
 			if dirExists(topicAssetfolder) || fileExists(topicAssetfolder) == false {
 				os.MkdirAll(topicAssetfolder, 0755)
-				fmt.Println("Anhangsverzeichnis wird erstellt ", topicAssetfolder)
+				fmt.Println("Erstelle Ordner ", topicAssetfolder)
+				fmt.Println(("+--------------------------------------------------------------+"))
 			}
 		case "exkursionen":
 			page.Type = "excursions"
 
 			if dirExists(excursionAssetfolder) || fileExists(excursionAssetfolder) == false {
 				os.MkdirAll(excursionAssetfolder, 0755)
-				fmt.Println("Anhangsverzeichnis wird erstellt ", excursionAssetfolder)
+				fmt.Println("Erstelle Ordner ", excursionAssetfolder)
+				fmt.Println(("+--------------------------------------------------------------+"))
 			}
 		case "reihe":
 			page.Type = "series"
@@ -611,6 +614,10 @@ func (h Handlers) CreateAsset(w http.ResponseWriter, r *http.Request) {
 		Path: dir,
 	}
 
+	// log output
+
+	fmt.Printf("Bild %s wird umgewandelt und nach %s kopiert.", asset.Name, asset.Path)
+	fmt.Printf("\n+--------------------------------------------------------------+\n")
 	asset.Resample()
 	asset.Thumbnail()
 
@@ -623,7 +630,6 @@ func (h Handlers) CreateAsset(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h Handlers) UpdateAsset(w http.ResponseWriter, r *http.Request) {
-
 	printJson(w, http.StatusOK)
 }
 
@@ -635,7 +641,8 @@ func (h Handlers) DeleteAsset(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Println("Delete ", fp)
+	fmt.Printf("Lösche %s", fp)
+	fmt.Printf("\n+--------------------------------------------------------------+\n")
 
 	// remove the file
 	os.Remove(fp)

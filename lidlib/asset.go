@@ -1,7 +1,6 @@
 package lidlib
 
 import (
-	"fmt"
 	"image/jpeg"
 	"io"
 	"log"
@@ -22,8 +21,6 @@ func NewAsset(path, filename string, file io.Reader) (*Asset, error) {
 
 func (a Asset) Thumbnail() {
 	fp := path.Join(a.Path, a.Name)
-
-	fmt.Println("Create 1000px thumbnail ", fp)
 
 	file, err := os.Open(fp)
 	if err != nil {
@@ -46,8 +43,6 @@ func (a Asset) Thumbnail() {
 func (a Asset) Resample() {
 	fp := path.Join(a.Path, a.Name)
 
-	fmt.Println("Resampling to 300px thumbnail ", fp)
-
 	file, err := os.Open(fp)
 	if err != nil {
 		log.Println(err)
@@ -59,8 +54,6 @@ func (a Asset) Resample() {
 		log.Println(err)
 		return
 	}
-
-	file.Close()
 
 	out := resize.Resize(300, 0, img, resize.Bilinear)
 

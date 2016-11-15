@@ -1,25 +1,30 @@
 package main
 
 import (
-	"log"
+	// "log"
 	"net/http"
 	"time"
+
+	"github.com/fatih/color"
 )
 
 func Logger(inner http.Handler, name string) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		messenger := color.New(color.FgYellow).PrintfFunc()
 		start := time.Now()
 
 		inner.ServeHTTP(w, r)
 
-		defer log.Println("---------")
+		defer messenger("\n+--------------------------------------------------------------+\n")
 
-		log.Printf(
-			"%s\t%s\t%s\t%s",
+		// log.Printf
+		messenger(
+			"%s  %s\t%s",
 			r.Method,
 			r.RequestURI,
-			name,
 			time.Since(start),
+			// name,
+
 		)
 	})
 }
