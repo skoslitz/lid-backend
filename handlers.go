@@ -661,9 +661,15 @@ func (h Handlers) PublishSite(w http.ResponseWriter, r *http.Request) {
 
 	output, err := lidlib.RunHugo(repoPath, webFolder)
 	if err != nil {
-		wrapError(err).Write(w)
+		fmt.Println(output, err)
+		printJson(w, struct {
+			Output string `json:"output"`
+		}{
+			Output: string(output),
+		})
 	}
 
+	fmt.Println(string(output))
 	printJson(w, struct {
 		Output string `json:"output"`
 	}{
@@ -672,10 +678,10 @@ func (h Handlers) PublishSite(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h Handlers) PreviewSite(w http.ResponseWriter, r *http.Request) {
-	baseUrlPrefix := strings.Join([]string{"http://", r.Host}, "")
 	repoPath := viper.GetString("repopath")
+	baseUrlPrefix := strings.Join([]string{"http://", r.Host}, "")
 
-	output, err := lidlib.RunHugoPreview(baseUrlPrefix, repoPath)
+	output, err := lidlib.RunHugoPreview(repoPath, baseUrlPrefix)
 	if err != nil {
 		fmt.Println(output, err)
 		printJson(w, struct {
@@ -686,7 +692,7 @@ func (h Handlers) PreviewSite(w http.ResponseWriter, r *http.Request) {
 
 	}
 
-	fmt.Println(output)
+	fmt.Println(string(output))
 	printJson(w, struct {
 		Output string `json:"output"`
 	}{
