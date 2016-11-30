@@ -1,19 +1,29 @@
 package lidlib
 
 import (
+	"golang.org/x/sys/unix"
 	"os/exec"
 	"strings"
 )
 
 func RunHugo(repoPath string, webFolder string) ([]byte, error) {
-	hugo := exec.Command("hugo17", "--source="+repoPath, "--destination="+webFolder)
 
-	output, err := hugo.Output()
-	if err != nil {
+	// TODO: make this working on sys/windows
+	permission := unix.Access(webFolder, unix.W_OK) == nil
+
+	if permission {
+		hugo := exec.Command("hugo17", "--source="+repoPath, "--destination="+webFolder)
+		output, err := hugo.Output()
+		if err != nil {
+			return output, nil
+		}
+
 		return output, nil
+	} else {
+		message := "Keine Berechtigung!"
+		return []byte(message), nil
 	}
 
-	return output, nil
 }
 
 func RunHugoPreview(repoPath string, baseUrlPrefix string) ([]byte, error) {
