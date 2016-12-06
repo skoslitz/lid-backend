@@ -2,6 +2,8 @@ package lidlib
 
 import (
 	//"golang.org/x/sys/unix"
+	"fmt"
+	"os"
 	"os/exec"
 	"strings"
 )
@@ -12,6 +14,9 @@ func RunHugo(repoPath string, webFolder string) ([]byte, error) {
 	//permission := unix.Access(webFolder, unix.W_OK) == nil
 
 	//if permission {
+
+	//change to repoPath with existing hugo17 executable
+	os.Chdir(repoPath)
 	hugo := exec.Command("hugo17", "--source="+repoPath, "--destination="+webFolder)
 	output, err := hugo.Output()
 	if err != nil {
@@ -19,10 +24,10 @@ func RunHugo(repoPath string, webFolder string) ([]byte, error) {
 	}
 
 	return output, nil
-	// } else {
-	// 	message := "Keine Berechtigung!"
-	// 	return []byte(message), nil
-	// }
+	/*} else {
+		message := "Keine Berechtigung!"
+		return []byte(message), nil
+	}*/
 
 }
 
