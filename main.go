@@ -21,7 +21,12 @@ func init() {
 	// Find and read the config
 	viper.SetConfigName("config")   // name of config file (without extension)
 	viper.AddConfigPath(configRoot) // path to look for the config file in
-	viper.ReadInConfig()            // Find and read the config file
+	err := viper.ReadInConfig()     // Find and read the config file
+	if err != nil {                 // Handle errors reading the config file
+		messenger := color.New(color.Bold, color.FgRed).PrintlnFunc()
+		messenger("Die Konfigurationsdatei config.toml konnte nicht gefunden werden!")
+		log.Fatal()
+	}
 
 }
 
