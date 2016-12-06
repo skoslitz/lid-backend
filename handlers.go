@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"golang.org/x/sys/unix"
 	"io"
 	"net/http"
 	"os"
@@ -698,22 +697,6 @@ func (h Handlers) PreviewSite(w http.ResponseWriter, r *http.Request) {
 	}{
 		Output: string(output),
 	})
-}
-
-// auth methods
-func (h Handlers) CheckWebadmin(w http.ResponseWriter, r *http.Request) {
-	webFolder := viper.GetString("webfolderpath")
-	permission := unix.Access(webFolder, unix.W_OK) == nil
-
-	printJson(w, permission)
-
-}
-
-func (h Handlers) CheckEditor(w http.ResponseWriter, r *http.Request) {
-	contentFolder := viper.GetString("contentpath")
-	permission := unix.Access(contentFolder, unix.W_OK) == nil
-
-	printJson(w, permission)
 }
 
 func (h Handlers) fixPathWithDir(p string, dir string) (string, error) {
