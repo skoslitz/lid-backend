@@ -7,6 +7,10 @@
 - Edit edit `config.toml` with required path infos
 - Compile with `go build`
 - Run with `./lid-backend`
+
+### Windows 
+- Rename lid-backend._syso to *.syso
+- Compile with `env GOOS=windows GOARCH=amd64 go build -o lid-backend.exe`
 - NOTE: If you move lid-backend exec, always take config.toml along
 
 ### Endpoints:
