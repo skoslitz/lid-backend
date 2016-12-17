@@ -2,7 +2,7 @@ package lidlib
 
 import (
 	//"golang.org/x/sys/unix"
-	"fmt"
+	//"fmt"
 	"os"
 	"os/exec"
 	"strings"

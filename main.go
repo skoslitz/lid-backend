@@ -4,8 +4,8 @@ import (
 	"log"
 	"net/http"
 	"os"
-	/*	"os/exec"
-		"runtime"*/
+	"os/exec"
+	"runtime"
 
 	"github.com/fatih/color"
 	"github.com/skoslitz/lid-backend/lidlib"
@@ -58,19 +58,17 @@ func main() {
 		AdminDir: viper.GetString("adminpath"),
 	})
 
-	// open browser with predefined url
-	/*switch runtime.GOOS {
-	case "linux":
-		exec.Command("xdg-open", "http://localhost:1313/api/dir/regionen").Start()
+	// open browser with lid-frontend
+	switch runtime.GOOS {
 	case "windows":
-		exec.Command("cmd", "/c", "start", "http://localhost:1313/api/dir/regionen").Start()
+		exec.Command("cmd", "/c", "start", "http://localhost:1313/").Start()
 	case "darwin":
-		exec.Command("open", "http://localhost:1313/api/dir/regionen").Start()
+		exec.Command("open", "http://localhost:1313/").Start()
 	default:
-		fmt.Errorf("unsupported platform")
-	}*/
+		exec.Command("xdg-open", "http://localhost:1313/").Start()
+	}
 
-	// lid-backend dashboard
+	// Terminaloutput of lid repo paths
 	t := termtable.NewTable(nil, &termtable.TableOptions{
 		Padding:      1,
 		UseSeparator: true,
@@ -85,7 +83,7 @@ func main() {
 	messenger("              LiD Online Content API                            ")
 	messenger(t.Render())
 	messenger("  Serveradresse: localhost:1313                                 ")
-	messenger("  Browse http://localhost:1313/api/dir/regionen                        ")
+	messenger("  LiD Online Editor verfügbar unter http://localhost:1313/                        ")
 	messenger("+--------------------------------------------------------------+")
 
 	// start http server
