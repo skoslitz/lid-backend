@@ -678,25 +678,21 @@ func (h Handlers) PublishSite(w http.ResponseWriter, r *http.Request) {
 
 func (h Handlers) PreviewSite(w http.ResponseWriter, r *http.Request) {
 	repoPath := viper.GetString("repopath")
-	baseUrlPrefix := strings.Join([]string{"http://", r.Host}, "")
 
-	output, err := lidlib.RunHugoPreview(repoPath, baseUrlPrefix)
+	err := lidlib.RunHugoPreview(repoPath)
 	if err != nil {
-		fmt.Println(output, err)
-		printJson(w, struct {
-			Output string `json:"output"`
-		}{
-			Output: string(output),
-		})
+		fmt.Println(err)
 
 	}
 
-	fmt.Println(string(output))
+	output := "Hugo server wurde gestartet"
+	fmt.Println("Hugo server wurde gestartet")
 	printJson(w, struct {
 		Output string `json:"output"`
 	}{
 		Output: string(output),
 	})
+
 }
 
 func (h Handlers) fixPathWithDir(p string, dir string) (string, error) {

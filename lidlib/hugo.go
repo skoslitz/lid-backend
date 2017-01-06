@@ -2,10 +2,10 @@ package lidlib
 
 import (
 	//"golang.org/x/sys/unix"
-	//"fmt"
+	"log"
 	"os"
 	"os/exec"
-	"strings"
+	// "strings"
 )
 
 func RunHugo(repoPath string, webFolder string) ([]byte, error) {
@@ -31,14 +31,16 @@ func RunHugo(repoPath string, webFolder string) ([]byte, error) {
 
 }
 
-func RunHugoPreview(repoPath string, baseUrlPrefix string) ([]byte, error) {
-	baseURL := strings.Join([]string{baseUrlPrefix, "/preview/"}, "")
-	hugo := exec.Command("hugo17", "--source="+repoPath, "--baseURL="+baseURL, "--canonifyURLs=true")
-
-	output, err := hugo.Output()
+func RunHugoPreview(repoPath string) error {
+	cmd := exec.Command("hugo", "server", "--port=1314", "--source="+repoPath)
+	err := cmd.Start()
 	if err != nil {
-		return output, nil
+		log.Fatal(err)
+		return err
 	}
 
-	return output, nil
+	return nil
+	err = cmd.Wait()
+	log.Printf("Command finished with error: %v", err)
+	return err
 }
