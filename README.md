@@ -1,14 +1,8 @@
-# lid-backend - content api for lid
+# lid-backend
 
-## Installation:
+## content api for lid online editor
 
-- First, install [golang](https://golang.org/doc/install#install)
-- Then: `go get github.com/skoslitz/lid-backend`
-- Edit edit `config.toml` with required path infos
-- Compile with `go build`
-- Run with `./lid-backend`
-
-### Windows 
+### Windows Build
 - Rename lid-backend._syso to *.syso
 - Compile with `env GOOS=windows GOARCH=amd64 go build -o lid-backend.exe`
 - NOTE: If you move lid-backend exec, always take config.toml along
@@ -26,6 +20,8 @@
 
 Example*: `OPTIONS dir/themen --form dir[name]="themen-neu"`
 
+*: under usage of [http-prompt](https://github.com/eliangcs/http-prompt)
+
 #### Pages
 - Read Page: GET /page/{path}/
 - Create Page: POST /page/{path}
@@ -36,19 +32,15 @@ Example*: `OPTIONS page/themen/77_B_000.md --form page[meta]={\"title\": \"Beitr
 
 Example (REST client usage):
 `POST page/themen/79_B_100-titel.md`
-Raw payload: 
+Raw payload:
 `{ "page": { "id": "77_B_100-titel.md", "type": "themen", "links": {}, "attributes": {"metadata": {"title": "79_B_100-titel"}} }}`
 
-#### Config
-- Read Config: GET /config
-- Update Config: OPTIONS /config
+### Development
 
-#### Build site with preview
-- PreviewSite: POST /site/preview
-- PublishSite: POST /site/publish
+## Installation:
 
-- PreviewFileServer runs on  `http://localhost:1313/preview/`
-  - Note: Basepath = root /preview
-
-
-*: under usage of [http-prompt](https://github.com/eliangcs/http-prompt)
+- First, install [golang](https://golang.org/doc/install#install)
+- Then: `go get github.com/skoslitz/lid-backend`
+- Edit edit `config.toml` with required path infos
+- Compile with `go build`
+- Run with `./lid-backend`
