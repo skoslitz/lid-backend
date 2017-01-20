@@ -35,6 +35,12 @@ func (a Asset) Thumbnail() {
 	}
 
 	out := resize.Resize(1000, 0, img, resize.Bilinear)
+
+	file, err = os.Create(fp)
+	if err != nil {
+		log.Println(err)
+		return
+	}
 	defer file.Close()
 
 	jpeg.Encode(file, out, nil)

@@ -614,11 +614,10 @@ func (h Handlers) CreateAsset(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// log output
-
+	asset.Thumbnail()
 	fmt.Printf("Bild %s wird umgewandelt und nach %s kopiert.", asset.Name, asset.Path)
 	fmt.Printf("\n+--------------------------------------------------------------+\n")
 	asset.Resample()
-	asset.Thumbnail()
 
 	asset.Path = strings.TrimPrefix(asset.Path, h.AssetsDir)
 
