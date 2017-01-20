@@ -2,6 +2,14 @@
 
 ## content api for lid online editor
 
+### Installation:
+
+- First, install [golang](https://golang.org/doc/install#install)
+- Then: `go get github.com/skoslitz/lid-backend`
+- Edit edit `config.toml` with required path infos
+- Compile with `go build`
+- Run with `./lid-backend`
+
 ### Windows Build
 - Rename lid-backend._syso to *.syso
 - Compile with `env GOOS=windows GOARCH=amd64 go build -o lid-backend.exe`
@@ -34,13 +42,3 @@ Example (REST client usage):
 `POST page/themen/79_B_100-titel.md`
 Raw payload:
 `{ "page": { "id": "77_B_100-titel.md", "type": "themen", "links": {}, "attributes": {"metadata": {"title": "79_B_100-titel"}} }}`
-
-### Development
-
-## Installation:
-
-- First, install [golang](https://golang.org/doc/install#install)
-- Then: `go get github.com/skoslitz/lid-backend`
-- Edit edit `config.toml` with required path infos
-- Compile with `go build`
-- Run with `./lid-backend`
