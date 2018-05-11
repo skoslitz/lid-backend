@@ -1,0 +1,54 @@
+# Gopkg.toml example
+#
+# Refer to https://golang.github.io/dep/docs/Gopkg.toml.html
+# for detailed Gopkg.toml documentation.
+#
+# required = ["github.com/user/thing/cmd/thing"]
+# ignored = ["github.com/user/project/pkgX", "bitbucket.org/user/project/pkgA/pkgY"]
+#
+# [[constraint]]
+#   name = "github.com/user/project"
+#   version = "1.0.0"
+#
+# [[constraint]]
+#   name = "github.com/user/project2"
+#   branch = "dev"
+#   source = "github.com/myfork/project2"
+#
+# [[override]]
+#   name = "github.com/x/y"
+#   version = "2.4.0"
+#
+# [prune]
+#   non-go = false
+#   go-tests = true
+#   unused-packages = true
+
+
+[[override]]
+  name = "github.com/gohugoio/hugo"
+  version = "0.18"
+
+[[override]]
+  name = "github.com/russross/blackfriday"
+  revision = "5f33e7b7878355cd2b7e6b8eefc48a5472c69f70"
+
+[[override]]
+  name = "github.com/BurntSushi/toml"
+	revision = "99064174e013895bbd9b025c31100bd1d9b590ca"
+
+[[override]]
+  name = "github.com/spf13/jwalterweatherman"
+  revision = "33c24e77fb80341fe7130ee7c594256ff08ccc46"
+
+[[override]]
+  name = "github.com/pelletier/go-toml"
+  revision = "017119f7a78a0b5fc0ea39ef6be09f03acf3345d"
+
+[[override]]
+  name = "github.com/pelletier/go-buffruneio"
+	revision = "df1e16fde7fc330a0ca68167c23bf7ed6ac31d6d"
+
+[prune]
+  go-tests = true
+  unused-packages = true

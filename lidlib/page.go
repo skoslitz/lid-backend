@@ -7,8 +7,8 @@ import (
 	"strings"
 
 	"github.com/spf13/cast"
-	"github.com/spf13/hugo/hugolib"
-	"github.com/spf13/hugo/parser"
+	"github.com/gohugoio/hugo/hugolib"
+	"github.com/gohugoio/hugo/parser"
 	"github.com/spf13/viper"
 )
 
